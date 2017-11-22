@@ -4,17 +4,14 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.TextView;
 
 import com.example.admin.scall.R;
-import com.example.admin.scall.dialog.EditFontDialog;
 import com.example.admin.scall.model.Contact;
 
 public class DetailContactActivity extends AppCompatActivity implements View.OnClickListener {
     private Contact contact;
-    private TextView tvPreview;
+    public TextView tvPreview;
     private TextView tvName;
     private TextView tvPhoneNumber;
 
@@ -40,7 +37,7 @@ public class DetailContactActivity extends AppCompatActivity implements View.OnC
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.tv_name:
-                Intent intent = new Intent(this, EditFontDialog.class);
+                Intent intent = new Intent(this, EditNameActivity.class);
                 intent.putExtra("Name", tvName.getText().toString());
                 startActivity(intent);
                 break;

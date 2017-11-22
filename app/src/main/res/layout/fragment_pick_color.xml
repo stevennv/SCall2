@@ -2,11 +2,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
-    <com.skydoves.multicolorpicker.MultiColorPickerView
-        android:id="@+id/multiColorPickerView"
-        android:layout_width="300dp"
-        android:layout_height="300dp" />
 </LinearLayout>

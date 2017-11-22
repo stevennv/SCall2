@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
                                 Phone.NUMBER));
                         Log.i("GET_INFO", "Name: " + name);
                         Log.i("GET_INFO", "Phone Number: " + phoneNo);
-                        Contact contact = new Contact(name, phoneNo);
+                        Contact contact = new Contact(id, phoneNo, name);
                         list.add(contact);
                     }
                     pCur.close();

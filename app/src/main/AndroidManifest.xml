@@ -22,8 +22,9 @@
             android:name=".activity.DetailContactActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".dialog.EditFontDialog"
+            android:name=".activity.EditFontActivity"
             android:screenOrientation="portrait" />
+        <activity android:name=".activity.EditNameActivity"></activity>
     </application>
 
 </manifest>
