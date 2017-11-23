@@ -3,17 +3,18 @@ package com.example.admin.scall.activity;
 import android.content.DialogInterface;
 import android.content.res.AssetManager;
 import android.graphics.Typeface;
+import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -21,9 +22,11 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.example.admin.scall.R;
+import com.example.admin.scall.adapter.EffectAdapter;
 import com.example.admin.scall.adapter.FontAdapter;
+import com.example.admin.scall.model.Contact;
 import com.example.admin.scall.model.InfoStyle;
-import com.example.admin.scall.utils.SharedPreferencesUtils;
+import com.example.admin.scall.sqlite.DatabaseHandler;
 
 import java.io.IOException;
 
@@ -37,6 +40,7 @@ public class EditNameActivity extends AppCompatActivity implements View.OnClickL
     private RelativeLayout rlColor;
     private CircleImageView civColor;
     private RecyclerView.LayoutManager layoutManager;
+    private RecyclerView.LayoutManager layoutManagerEffect;
     private String[] list;
     private FontAdapter adapter;
     private int currentColor;
@@ -44,21 +48,28 @@ public class EditNameActivity extends AppCompatActivity implements View.OnClickL
     private TextView tvTitleToolbar;
     private ImageView imgToolbar;
     private SeekBar sbTextSize;
-    private SharedPreferencesUtils utils;
     private InfoStyle infoStyle;
     private String fontStyle;
     private int size;
+    private Contact contact;
+    private DatabaseHandler db;
+    private Animation animation;
+    private RecyclerView rvEffect;
+    private int[] listEffect = {R.anim.bounce, R.anim.rotate, R.anim.custom_anim1};
+    private EffectAdapter effectAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_name);
         iniUI();
-        getData();
+//        getData();
     }
 
     protected void iniUI() {
-        utils = new SharedPreferencesUtils(this);
+        animation = AnimationUtils.loadAnimation(getApplicationContext(),
+                R.anim.bounce);
+        db = new DatabaseHandler(this);
         currentColor = ContextCompat.getColor(this, R.color.colorAccent);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -77,15 +88,18 @@ public class EditNameActivity extends AppCompatActivity implements View.OnClickL
         tvName = (TextView) findViewById(R.id.tv_name);
         edtName = (EditText) findViewById(R.id.edt_name);
         rvFont = (RecyclerView) findViewById(R.id.rv_font);
+        rvEffect = (RecyclerView) findViewById(R.id.rv_effect);
         rlColor = (RelativeLayout) findViewById(R.id.rl_color);
         civColor = (CircleImageView) findViewById(R.id.civ_color);
         layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        layoutManagerEffect = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         rvFont.setLayoutManager(layoutManager);
+        rvEffect.setLayoutManager(layoutManagerEffect);
         tvName.measure(0, 0);
         if (getIntent() != null) {
-            String name = getIntent().getStringExtra("Name");
-            edtName.setText(name);
-            tvName.setText(name);
+            contact = (Contact) getIntent().getSerializableExtra("Contact");
+            edtName.setText(contact.getName());
+            tvName.setText(contact.getName());
         }
         AssetManager assetManager = getAssets();
         try {
@@ -101,6 +115,17 @@ public class EditNameActivity extends AppCompatActivity implements View.OnClickL
                 tvName.setTypeface(font);
             }
         });
+        effectAdapter = new EffectAdapter(this, listEffect, new EffectAdapter.clickItem() {
+            @Override
+            public void click(int value) {
+                animation.cancel();
+                animation = AnimationUtils.loadAnimation(getApplicationContext(),
+                        value);
+                tvName.startAnimation(animation);
+            }
+        });
+        effectAdapter.notifyDataSetChanged();
+        rvEffect.setAdapter(effectAdapter);
         adapter.notifyDataSetChanged();
         rvFont.setAdapter(adapter);
         rlColor.setOnClickListener(this);
@@ -160,8 +185,12 @@ public class EditNameActivity extends AppCompatActivity implements View.OnClickL
                 dialog.show();
                 break;
             case R.id.img_menu_toolbar:
-                infoStyle = new InfoStyle("1", edtName.getText().toString(), fontStyle, currentColor, size);
-                utils.saveStyleInfo(infoStyle);
+                infoStyle = new InfoStyle(contact.getId(), edtName.getText().toString(), fontStyle, currentColor, size);
+//                if (db.updateStyle(infoStyle) == 0) {
+                db.addStyle(infoStyle);
+//                } else {
+//                db.updateStyle(infoStyle);
+//                }
                 AlertDialog dialog1 = new AlertDialog.Builder(this)
                         .setMessage(getString(R.string.save_success))
                         .setNegativeButton("ok", new DialogInterface.OnClickListener() {
@@ -176,8 +205,9 @@ public class EditNameActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void getData() {
-        if (utils.getInfoStyle("1") != null) {
-            infoStyle = utils.getInfoStyle("1");
+//        InfoStyle infoStyle = db.search2(contact.getId());
+        String a = "";
+        if (infoStyle != null) {
             if (infoStyle.getFont() != null) {
                 Typeface font = Typeface.createFromAsset(getAssets(), "fonts/" + infoStyle.getFont());
                 tvName.setTypeface(font);

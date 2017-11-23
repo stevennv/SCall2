@@ -38,7 +38,7 @@ public class DetailContactActivity extends AppCompatActivity implements View.OnC
         switch (view.getId()) {
             case R.id.tv_name:
                 Intent intent = new Intent(this, EditNameActivity.class);
-                intent.putExtra("Name", tvName.getText().toString());
+                intent.putExtra("Contact", contact);
                 startActivity(intent);
                 break;
         }

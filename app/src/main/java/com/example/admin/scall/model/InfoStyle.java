@@ -5,7 +5,7 @@ package com.example.admin.scall.model;
  */
 
 public class InfoStyle {
-    public InfoStyle(String id, String name, String font, int colorName, int size) {
+    public InfoStyle(int id, String name, String font, int colorName, int size) {
         this.id = id;
         this.name = name;
         this.font = font;
@@ -13,18 +13,23 @@ public class InfoStyle {
         this.size = size;
     }
 
-    private String id;
+    private int id;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     private String name;
     private String font;
     private int colorName;
     private int size;
 
-    public String getId() {
-        return id;
-    }
 
-    public void setId(String id) {
-        this.id = id;
+    public InfoStyle() {
     }
 
     public String getName() {

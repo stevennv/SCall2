@@ -30,6 +30,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_margin="@dimen/padding_10"
+            android:layout_marginBottom="@dimen/padding_20"
             android:orientation="vertical">
 
             <EditText
@@ -96,6 +97,27 @@
                 android:id="@+id/sb_text_size"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="@dimen/padding_10"
+                android:background="@color/black" />
+
+            <TextView
+                android:id="@+id/tv_effect"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/padding_10"
+                android:text="@string/effect"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_size_16" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rv_effect"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_marginTop="@dimen/padding_10" />
         </LinearLayout>
     </ScrollView>
 

@@ -54,7 +54,8 @@ public class MainActivity extends AppCompatActivity {
                         cur.getColumnIndex(ContactsContract.Contacts._ID));
                 String name = cur.getString(cur.getColumnIndex(
                         ContactsContract.Contacts.DISPLAY_NAME));
-
+                int id1 = cur.getInt(cur.getColumnIndex(ContactsContract.Contacts._ID));
+                Log.d("getContactList: ", "getContactList: " + id1);
                 if (cur.getInt(cur.getColumnIndex(
                         ContactsContract.Contacts.HAS_PHONE_NUMBER)) > 0) {
                     Cursor pCur = cr.query(
@@ -67,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
                                 Phone.NUMBER));
                         Log.i("GET_INFO", "Name: " + name);
                         Log.i("GET_INFO", "Phone Number: " + phoneNo);
-                        Contact contact = new Contact(id, phoneNo, name);
+                        Contact contact = new Contact(id1, phoneNo, name);
                         list.add(contact);
                     }
                     pCur.close();
