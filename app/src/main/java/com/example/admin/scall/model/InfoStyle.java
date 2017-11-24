@@ -5,12 +5,22 @@ package com.example.admin.scall.model;
  */
 
 public class InfoStyle {
-    public InfoStyle(int id, String name, String font, int colorName, int size) {
-        this.id = id;
+    public InfoStyle(String phone, String name, String font, int color, int size) {
+        this.phone = phone;
         this.name = name;
         this.font = font;
-        this.colorName = colorName;
+        this.color = color;
         this.size = size;
+    }
+
+    private String phone;
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
     private int id;
@@ -25,7 +35,16 @@ public class InfoStyle {
 
     private String name;
     private String font;
-    private int colorName;
+
+    public int getColor() {
+        return color;
+    }
+
+    public void setColor(int color) {
+        this.color = color;
+    }
+
+    private int color;
     private int size;
 
 
@@ -48,13 +67,6 @@ public class InfoStyle {
         this.font = font;
     }
 
-    public int getColorName() {
-        return colorName;
-    }
-
-    public void setColorName(int colorName) {
-        this.colorName = colorName;
-    }
 
     public int getSize() {
         return size;

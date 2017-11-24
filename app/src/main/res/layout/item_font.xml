@@ -18,4 +18,5 @@
         android:lines="2"
         android:padding="@dimen/padding_20"
         android:textColor="@color/black" />
+
 </LinearLayout>

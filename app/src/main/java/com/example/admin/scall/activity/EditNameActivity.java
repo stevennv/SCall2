@@ -26,7 +26,6 @@ import com.example.admin.scall.adapter.EffectAdapter;
 import com.example.admin.scall.adapter.FontAdapter;
 import com.example.admin.scall.model.Contact;
 import com.example.admin.scall.model.InfoStyle;
-import com.example.admin.scall.sqlite.DatabaseHandler;
 
 import java.io.IOException;
 
@@ -52,7 +51,6 @@ public class EditNameActivity extends AppCompatActivity implements View.OnClickL
     private String fontStyle;
     private int size;
     private Contact contact;
-    private DatabaseHandler db;
     private Animation animation;
     private RecyclerView rvEffect;
     private int[] listEffect = {R.anim.bounce, R.anim.rotate, R.anim.custom_anim1};
@@ -69,7 +67,6 @@ public class EditNameActivity extends AppCompatActivity implements View.OnClickL
     protected void iniUI() {
         animation = AnimationUtils.loadAnimation(getApplicationContext(),
                 R.anim.bounce);
-        db = new DatabaseHandler(this);
         currentColor = ContextCompat.getColor(this, R.color.colorAccent);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -186,11 +183,6 @@ public class EditNameActivity extends AppCompatActivity implements View.OnClickL
                 break;
             case R.id.img_menu_toolbar:
                 infoStyle = new InfoStyle(contact.getId(), edtName.getText().toString(), fontStyle, currentColor, size);
-//                if (db.updateStyle(infoStyle) == 0) {
-                db.addStyle(infoStyle);
-//                } else {
-//                db.updateStyle(infoStyle);
-//                }
                 AlertDialog dialog1 = new AlertDialog.Builder(this)
                         .setMessage(getString(R.string.save_success))
                         .setNegativeButton("ok", new DialogInterface.OnClickListener() {
@@ -205,7 +197,6 @@ public class EditNameActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void getData() {
-//        InfoStyle infoStyle = db.search2(contact.getId());
         String a = "";
         if (infoStyle != null) {
             if (infoStyle.getFont() != null) {
