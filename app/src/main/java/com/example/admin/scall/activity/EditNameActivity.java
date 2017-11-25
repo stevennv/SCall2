@@ -26,6 +26,7 @@ import com.example.admin.scall.adapter.EffectAdapter;
 import com.example.admin.scall.adapter.FontAdapter;
 import com.example.admin.scall.model.Contact;
 import com.example.admin.scall.model.InfoStyle;
+import com.example.admin.scall.sqlite.DatabaseHandler;
 
 import java.io.IOException;
 
@@ -55,7 +56,7 @@ public class EditNameActivity extends AppCompatActivity implements View.OnClickL
     private RecyclerView rvEffect;
     private int[] listEffect = {R.anim.bounce, R.anim.rotate, R.anim.custom_anim1};
     private EffectAdapter effectAdapter;
-
+    private DatabaseHandler db;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,6 +66,7 @@ public class EditNameActivity extends AppCompatActivity implements View.OnClickL
     }
 
     protected void iniUI() {
+        db = new DatabaseHandler(this);
         animation = AnimationUtils.loadAnimation(getApplicationContext(),
                 R.anim.bounce);
         currentColor = ContextCompat.getColor(this, R.color.colorAccent);
@@ -182,7 +184,10 @@ public class EditNameActivity extends AppCompatActivity implements View.OnClickL
                 dialog.show();
                 break;
             case R.id.img_menu_toolbar:
-                infoStyle = new InfoStyle(contact.getId(), edtName.getText().toString(), fontStyle, currentColor, size);
+                infoStyle = new InfoStyle(contact.getPhoneNumber(), edtName.getText().toString(), fontStyle, currentColor, size);
+//                if (db.getContact(contact.getPhoneNumber())!=null){
+//                    db.updateContact()
+//                }
                 AlertDialog dialog1 = new AlertDialog.Builder(this)
                         .setMessage(getString(R.string.save_success))
                         .setNegativeButton("ok", new DialogInterface.OnClickListener() {
@@ -209,7 +214,7 @@ public class EditNameActivity extends AppCompatActivity implements View.OnClickL
 
             tvName.setText(infoStyle.getName());
 
-            tvName.setTextColor(infoStyle.getColorName());
+            tvName.setTextColor(infoStyle.getColor());
         } else {
             tvName.setTextSize(16);
         }

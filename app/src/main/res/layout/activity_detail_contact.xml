@@ -12,6 +12,13 @@
         android:layout_width="match_parent"
         android:layout_height="200dp">
 
+
+        <ImageView
+            android:id="@+id/img_effect"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:scaleType="fitXY" />
+
         <com.hanks.htextview.rainbow.RainbowTextView
             android:id="@+id/tv_preview"
             android:layout_width="120dp"
@@ -22,11 +29,6 @@
             android:textSize="20sp"
             app:colorSpace="150dp"
             app:colorSpeed="4dp" />
-
-        <ImageView
-            android:id="@+id/img_effect"
-            android:layout_width="match_parent"
-            android:layout_height="200dp" />
     </RelativeLayout>
 
     <TextView

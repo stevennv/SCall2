@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.telephony.TelephonyManager;
 import android.widget.Toast;
 
+import com.example.admin.scall.activity.DetailContactActivity;
 import com.example.admin.scall.activity.MainActivity;
 
 import java.util.Date;
@@ -30,7 +31,7 @@ public class CallReceiver extends BroadcastReceiver {
                 isIncoming = true;
                 callStartTime = new Date();
                 savedNumber = number;
-                Intent intent = new Intent(context, MainActivity.class);
+                Intent intent = new Intent(context, DetailContactActivity.class);
                 context.startActivity(intent);
                 Toast.makeText(context, "Incoming Call Ringing", Toast.LENGTH_SHORT).show();
                 break;
