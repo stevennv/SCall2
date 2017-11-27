@@ -20,9 +20,9 @@ import android.util.Log;
 import com.example.admin.scall.R;
 import com.example.admin.scall.adapter.ContactAdapter;
 import com.example.admin.scall.model.Contact;
+import com.example.admin.scall.model.InfoStyle;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -30,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView.LayoutManager layoutManager;
     private ContactAdapter adapter;
     private List<Contact> list = new ArrayList<>();
+    private List<InfoStyle> list1 = new ArrayList<>();
     public static final int REQUEST_ID_MULTIPLE_PERMISSIONS = 1;
     private static final int RECORD_REQUEST_CODE = 101;
 
@@ -65,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         iniUI();
+
         getContactList();
         checkAndRequestPermissions();
     }
@@ -85,10 +87,10 @@ public class MainActivity extends AppCompatActivity {
         rvContact = (RecyclerView) findViewById(R.id.rv_contact);
         layoutManager = new LinearLayoutManager(this);
         rvContact.setLayoutManager(layoutManager);
-        TelephonyManager tMgr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-        String mPhoneNumber = tMgr.getLine1Number();
-        Log.d("iniUI:", "iniUI: " + mPhoneNumber);
-        mPhoneNumber.length();
+//        TelephonyManager tMgr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+//        String mPhoneNumber = tMgr.getLine1Number();
+//        Log.d("iniUI:", "iniUI: " + mPhoneNumber);
+//        mPhoneNumber.length();
         // 15555215554
     }
 

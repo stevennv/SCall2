@@ -1,11 +1,22 @@
 package com.example.admin.scall.model;
 
+import java.io.Serializable;
+
 /**
  * Created by Admin on 11/22/2017.
  */
 
-public class InfoStyle {
-    public InfoStyle(String phone, String name, String font, int color, int size) {
+public class InfoStyle implements Serializable {
+    public InfoStyle(int id, String name, String phone, String font, int color, int size) {
+        this.id = id;
+        this.phone = phone;
+        this.name = name;
+        this.font = font;
+        this.color = color;
+        this.size = size;
+    }
+
+    public InfoStyle(String name, String phone, String font, int color, int size) {
         this.phone = phone;
         this.name = name;
         this.font = font;

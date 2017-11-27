@@ -42,11 +42,12 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         MyViewHolder myViewHolder = (MyViewHolder) holder;
         final Contact contact = list.get(position);
-        myViewHolder.tvName.setText(contact.getName());
+        myViewHolder.tvName.setText(contact.getName() + "\n" + "\t \t" + contact.getPhoneNumber());
         myViewHolder.llItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(context, DetailContactActivity.class);
+                intent.putExtra("Main", "Abc");
                 intent.putExtra("Contact", contact);
                 context.startActivity(intent);
             }

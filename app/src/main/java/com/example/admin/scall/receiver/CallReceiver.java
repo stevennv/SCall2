@@ -8,6 +8,8 @@ import android.widget.Toast;
 
 import com.example.admin.scall.activity.DetailContactActivity;
 import com.example.admin.scall.activity.MainActivity;
+import com.example.admin.scall.model.InfoStyle;
+import com.example.admin.scall.utils.SqliteHelper;
 
 import java.util.Date;
 
@@ -20,6 +22,7 @@ public class CallReceiver extends BroadcastReceiver {
     private static Date callStartTime;
     private static boolean isIncoming;
     private static String savedNumber;
+    private SqliteHelper db;
 
     public void onCallStateChanged(Context context, int state, String number) {
         if (lastState == state) {
@@ -31,9 +34,16 @@ public class CallReceiver extends BroadcastReceiver {
                 isIncoming = true;
                 callStartTime = new Date();
                 savedNumber = number;
-                Intent intent = new Intent(context, DetailContactActivity.class);
-                context.startActivity(intent);
-                Toast.makeText(context, "Incoming Call Ringing", Toast.LENGTH_SHORT).show();
+                try {
+                    db.getStyleById(number);
+                    Intent intent = new Intent(context, DetailContactActivity.class);
+                    InfoStyle infoStyle = db.getStyleById(number);
+                    intent.putExtra("Info", infoStyle);
+                    context.startActivity(intent);
+                    Toast.makeText(context, "Incoming Call Ringing", Toast.LENGTH_SHORT).show();
+                } catch (Exception e) {
+                    Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
                 break;
             case TelephonyManager.CALL_STATE_OFFHOOK:
                 //Transition of ringing->offhook are pickups of incoming calls.  Nothing done on them
@@ -65,6 +75,7 @@ public class CallReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        db = new SqliteHelper(context);
         if (intent.getAction().equals("android.intent.action.NEW_OUTGOING_CALL")) {
             savedNumber = intent.getExtras().getString("android.intent.extra.PHONE_NUMBER");
 

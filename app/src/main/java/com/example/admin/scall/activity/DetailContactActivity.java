@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.example.admin.scall.R;
 import com.example.admin.scall.model.Contact;
+import com.example.admin.scall.model.InfoStyle;
 
 public class DetailContactActivity extends AppCompatActivity implements View.OnClickListener {
     private Contact contact;
@@ -38,18 +39,33 @@ public class DetailContactActivity extends AppCompatActivity implements View.OnC
         imgEffect = (ImageView) findViewById(R.id.img_effect);
         imgEffect.setOnClickListener(this);
         if (getIntent() != null) {
-            contact = (Contact) getIntent().getSerializableExtra("Contact");
-            if (contact != null) {
-                tvName.setText(contact.getName());
-                tvPhoneNumber.setText(contact.getPhoneNumber());
+            String a = getIntent().getStringExtra("Main");
+            if (a != null) {
+                contact = (Contact) getIntent().getSerializableExtra("Contact");
+                if (contact != null) {
+                    tvName.setText(contact.getName());
+                    tvPhoneNumber.setText(contact.getPhoneNumber());
+                } else {
+                    tvName.setText("Ai đó");
+                }
             } else {
-                tvName.setText("Ai đó");
+                InfoStyle infoStyle = (InfoStyle) getIntent().getSerializableExtra("Info");
+                Typeface font = Typeface.createFromAsset(getAssets(), "fonts/" + infoStyle.getFont());
+                tvName.setTypeface(font);
+                tvName.setText(infoStyle.getName());
+                tvName.setTextColor(infoStyle.getColor());
+                tvName.setTextSize(infoStyle.getSize());
+                tvName.setClickable(false);
+                imgEffect.setClickable(false);
+                tvName.setEnabled(false);
+                imgEffect.setEnabled(false);
             }
+
         }
         tvName.setOnClickListener(this);
-        Typeface font = Typeface.createFromAsset(getAssets(), "fonts/Kitten.otf");
-        tvName.setTypeface(font);
-        tvName.setTextSize(40);
+//        Typeface font = Typeface.createFromAsset(getAssets(), "fonts/Kitten.otf");
+//        tvName.setTypeface(font);
+//        tvName.setTextSize(40);
     }
 
     @Override

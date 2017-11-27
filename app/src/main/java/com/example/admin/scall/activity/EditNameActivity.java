@@ -12,6 +12,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -20,15 +21,18 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.admin.scall.R;
 import com.example.admin.scall.adapter.EffectAdapter;
 import com.example.admin.scall.adapter.FontAdapter;
 import com.example.admin.scall.model.Contact;
 import com.example.admin.scall.model.InfoStyle;
-import com.example.admin.scall.sqlite.DatabaseHandler;
+import com.example.admin.scall.utils.SqliteHelper;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import yuku.ambilwarna.AmbilWarnaDialog;
@@ -56,7 +60,9 @@ public class EditNameActivity extends AppCompatActivity implements View.OnClickL
     private RecyclerView rvEffect;
     private int[] listEffect = {R.anim.bounce, R.anim.rotate, R.anim.custom_anim1};
     private EffectAdapter effectAdapter;
-    private DatabaseHandler db;
+    private SqliteHelper db;
+    List<InfoStyle> list1 = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,7 +72,13 @@ public class EditNameActivity extends AppCompatActivity implements View.OnClickL
     }
 
     protected void iniUI() {
-        db = new DatabaseHandler(this);
+        db = new SqliteHelper(this);
+
+        list1 = db.getAllStyle();
+        for (int i = 0; i < list1.size(); i++) {
+            Log.d("iniUI: ", "iniUI: " + list1.get(i).getName() + "   " + list1.get(0).getPhone());
+        }
+//        Log.d("iniUI: ", "iniUI: " + db.getStyle/("096-891-2128").getName());
         animation = AnimationUtils.loadAnimation(getApplicationContext(),
                 R.anim.bounce);
         currentColor = ContextCompat.getColor(this, R.color.colorAccent);
@@ -129,6 +141,7 @@ public class EditNameActivity extends AppCompatActivity implements View.OnClickL
         rvFont.setAdapter(adapter);
         rlColor.setOnClickListener(this);
         imgToolbar.setOnClickListener(this);
+
         edtName.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -184,10 +197,16 @@ public class EditNameActivity extends AppCompatActivity implements View.OnClickL
                 dialog.show();
                 break;
             case R.id.img_menu_toolbar:
-                infoStyle = new InfoStyle(contact.getPhoneNumber(), edtName.getText().toString(), fontStyle, currentColor, size);
+                InfoStyle infoStyle = new InfoStyle(contact.getId(), contact.getName(), formatNumber(contact.getPhoneNumber()), fontStyle, currentColor, size);
+//                if (db.getStyleCount() != 0) {
+
+//        } else{
+//            db.addStyle(infoStyle);
+//                }
 //                if (db.getContact(contact.getPhoneNumber())!=null){
 //                    db.updateContact()
 //                }
+                saveAndUpdateStyle(infoStyle);
                 AlertDialog dialog1 = new AlertDialog.Builder(this)
                         .setMessage(getString(R.string.save_success))
                         .setNegativeButton("ok", new DialogInterface.OnClickListener() {
@@ -201,22 +220,23 @@ public class EditNameActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
-    private void getData() {
-        String a = "";
-        if (infoStyle != null) {
-            if (infoStyle.getFont() != null) {
-                Typeface font = Typeface.createFromAsset(getAssets(), "fonts/" + infoStyle.getFont());
-                tvName.setTypeface(font);
-            }
-            if (infoStyle.getSize() != 0) {
-                tvName.setTextSize(infoStyle.getSize());
-            }
-
-            tvName.setText(infoStyle.getName());
-
-            tvName.setTextColor(infoStyle.getColor());
-        } else {
-            tvName.setTextSize(16);
+    private void saveAndUpdateStyle(InfoStyle info) {
+        try {
+            db.getStyleById(info.getPhone());
+            db.updateStyle(info);
+            Toast.makeText(this, "Update", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            db.addStyle(info);
+            Toast.makeText(this, "Add", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private String formatNumber(String number) {
+        String result1 = number.replace("-", "");
+        String result2 = result1.replace("(", "");
+        String result3 = result2.replace(")", "");
+        String result = result3.replace(" ", "");
+
+        return result;
     }
 }
