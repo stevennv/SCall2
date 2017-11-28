@@ -43,7 +43,7 @@ public class FontFragment extends Fragment {
                 Typeface font = Typeface.createFromAsset(getContext().getAssets(), "fonts/" + value);
                 editFontActivity.tvNamePreview.setTypeface(font);
             }
-        });
+        }, "123");
         adapter.notifyDataSetChanged();
         rvFont.setAdapter(adapter);
         return view;

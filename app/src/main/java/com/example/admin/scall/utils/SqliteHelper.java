@@ -33,14 +33,16 @@ public class SqliteHelper extends SQLiteOpenHelper {
     private static final String KEY_NAME = "name";
     private static final String KEY_PHONE = "phone_number";
     private static final String KEY_FONT = "font";
+    private static final String KEY_URL_IMAGE = "url_image";
     private static final String KEY_COLOR = "color";
     private static final String KEY_SIZE = "size";
+    private static final String KEY_ANIMATION = "animation";
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         String CREATE_CONTACTS_TABLE = "CREATE TABLE " + TABLE_STYLE + "("
                 + KEY_ID + " INTEGER PRIMARY KEY," + KEY_NAME + " TEXT,"
-                + KEY_PHONE + " TEXT," + KEY_FONT + " TEXT," + KEY_COLOR + " INTEGER," + KEY_SIZE + " INTEGER" + ")";
+                + KEY_PHONE + " TEXT," + KEY_FONT + " TEXT," + KEY_URL_IMAGE + " TEXT," + KEY_COLOR + " INTEGER," + KEY_SIZE + " INTEGER," + KEY_ANIMATION + " INTEGER" + ")";
         sqLiteDatabase.execSQL(CREATE_CONTACTS_TABLE);
     }
 
@@ -59,8 +61,10 @@ public class SqliteHelper extends SQLiteOpenHelper {
         values.put(KEY_NAME, style.getName()); // Contact Name
         values.put(KEY_PHONE, style.getPhone()); // Contact Phone
         values.put(KEY_FONT, style.getFont()); // Contact Phone
+        values.put(KEY_URL_IMAGE, style.getUrlImage()); // Contact Phone
         values.put(KEY_COLOR, style.getColor()); // Contact Phone
         values.put(KEY_SIZE, style.getSize()); // Contact Phone
+        values.put(KEY_ANIMATION, style.getAnimation()); // Contact Phone
 
         // Inserting Row
         db.insert(TABLE_STYLE, null, values);
@@ -71,13 +75,13 @@ public class SqliteHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.query(TABLE_STYLE, new String[]{KEY_ID,
-                        KEY_NAME, KEY_PHONE, KEY_FONT, KEY_COLOR, KEY_SIZE}, KEY_PHONE + "=?",
+                        KEY_NAME, KEY_PHONE, KEY_FONT, KEY_URL_IMAGE, KEY_COLOR, KEY_SIZE, KEY_ANIMATION}, KEY_PHONE + "=?",
                 new String[]{phone}, null, null, null, null);
         if (cursor != null)
             cursor.moveToFirst();
 
         InfoStyle style = new InfoStyle(Integer.parseInt(cursor.getString(0)), cursor.getString(1),
-                cursor.getString(2), cursor.getString(3), Integer.parseInt(cursor.getString(4)), Integer.parseInt(cursor.getString(5)));
+                cursor.getString(2), cursor.getString(3), cursor.getString(4), Integer.parseInt(cursor.getString(5)), Integer.parseInt(cursor.getString(6)), Integer.parseInt(cursor.getString(7)));
         // return contact
         return style;
     }
@@ -98,8 +102,10 @@ public class SqliteHelper extends SQLiteOpenHelper {
                 style.setName(cursor.getString(1));
                 style.setPhone(cursor.getString(2));
                 style.setFont(cursor.getString(3));
-                style.setColor(cursor.getInt(4));
-                style.setSize(cursor.getInt(5));
+                style.setUrlImage(cursor.getString(4));
+                style.setColor(cursor.getInt(5));
+                style.setSize(cursor.getInt(6));
+                style.setAnimation(cursor.getInt(7));
                 // Adding contact to list
                 contactList.add(style);
             } while (cursor.moveToNext());
@@ -116,8 +122,10 @@ public class SqliteHelper extends SQLiteOpenHelper {
         values.put(KEY_NAME, style.getName());
         values.put(KEY_PHONE, style.getPhone());
         values.put(KEY_FONT, style.getFont());
+        values.put(KEY_URL_IMAGE, style.getUrlImage());
         values.put(KEY_COLOR, style.getColor());
         values.put(KEY_SIZE, style.getSize());
+        values.put(KEY_ANIMATION, style.getAnimation());
 
         // updating row
         return db.update(TABLE_STYLE, values, KEY_ID + " = ?",

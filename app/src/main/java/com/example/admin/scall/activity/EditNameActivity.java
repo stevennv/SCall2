@@ -1,9 +1,14 @@
 package com.example.admin.scall.activity;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.AssetManager;
+import android.graphics.Bitmap;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -23,6 +28,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.admin.scall.R;
 import com.example.admin.scall.adapter.EffectAdapter;
 import com.example.admin.scall.adapter.FontAdapter;
@@ -30,7 +36,10 @@ import com.example.admin.scall.model.Contact;
 import com.example.admin.scall.model.InfoStyle;
 import com.example.admin.scall.utils.SqliteHelper;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,7 +61,9 @@ public class EditNameActivity extends AppCompatActivity implements View.OnClickL
     private TextView tvTitleToolbar;
     private ImageView imgToolbar;
     private SeekBar sbTextSize;
-    private InfoStyle infoStyle;
+    private ImageView imgEffect;
+    private TextView tvChangeBackground;
+    //    private InfoStyle infoStyle;
     private String fontStyle;
     private int size;
     private Contact contact;
@@ -62,6 +73,11 @@ public class EditNameActivity extends AppCompatActivity implements View.OnClickL
     private EffectAdapter effectAdapter;
     private SqliteHelper db;
     List<InfoStyle> list1 = new ArrayList<>();
+    private InfoStyle infoStyle;
+    private String imagePath;
+    public static final int IMAGE_GALLERY = 1;
+    public static final int IMAGE_CAMERA = 2;
+    private int animation1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,6 +118,8 @@ public class EditNameActivity extends AppCompatActivity implements View.OnClickL
         rvEffect = (RecyclerView) findViewById(R.id.rv_effect);
         rlColor = (RelativeLayout) findViewById(R.id.rl_color);
         civColor = (CircleImageView) findViewById(R.id.civ_color);
+        imgEffect = (ImageView) findViewById(R.id.img_effect);
+        tvChangeBackground = (TextView) findViewById(R.id.tv_change_background);
         layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         layoutManagerEffect = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         rvFont.setLayoutManager(layoutManager);
@@ -111,6 +129,18 @@ public class EditNameActivity extends AppCompatActivity implements View.OnClickL
             contact = (Contact) getIntent().getSerializableExtra("Contact");
             edtName.setText(contact.getName());
             tvName.setText(contact.getName());
+            try {
+                infoStyle = (InfoStyle) getIntent().getSerializableExtra("Style");
+                tvName.setText(infoStyle.getName());
+                Typeface typeface = Typeface.createFromAsset(getAssets(), "fonts/" + infoStyle.getFont());
+                tvName.setTypeface(typeface);
+                tvName.setTextSize(infoStyle.getSize());
+                tvName.setTextColor(infoStyle.getColor());
+                sbTextSize.setProgress(infoStyle.getSize());
+                edtName.setText(infoStyle.getName());
+            } catch (Exception e) {
+                Log.e("iniUI: ", "iniUI: " + e.getMessage());
+            }
         }
         AssetManager assetManager = getAssets();
         try {
@@ -123,13 +153,15 @@ public class EditNameActivity extends AppCompatActivity implements View.OnClickL
             public void click(String value) {
                 fontStyle = value;
                 Typeface font = Typeface.createFromAsset(getAssets(), "fonts/" + value);
+                Log.d("click:", "click: " + value);
                 tvName.setTypeface(font);
             }
-        });
+        }, contact.getName());
         effectAdapter = new EffectAdapter(this, listEffect, new EffectAdapter.clickItem() {
             @Override
             public void click(int value) {
                 animation.cancel();
+                animation1 = value;
                 animation = AnimationUtils.loadAnimation(getApplicationContext(),
                         value);
                 tvName.startAnimation(animation);
@@ -141,7 +173,7 @@ public class EditNameActivity extends AppCompatActivity implements View.OnClickL
         rvFont.setAdapter(adapter);
         rlColor.setOnClickListener(this);
         imgToolbar.setOnClickListener(this);
-
+        tvChangeBackground.setOnClickListener(this);
         edtName.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -181,6 +213,9 @@ public class EditNameActivity extends AppCompatActivity implements View.OnClickL
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.rl_color:
+                if (infoStyle != null) {
+                    currentColor = infoStyle.getColor();
+                }
                 AmbilWarnaDialog dialog = new AmbilWarnaDialog(this, currentColor, true, new AmbilWarnaDialog.OnAmbilWarnaListener() {
                     @Override
                     public void onCancel(AmbilWarnaDialog dialog) {
@@ -197,7 +232,8 @@ public class EditNameActivity extends AppCompatActivity implements View.OnClickL
                 dialog.show();
                 break;
             case R.id.img_menu_toolbar:
-                InfoStyle infoStyle = new InfoStyle(contact.getId(), contact.getName(), formatNumber(contact.getPhoneNumber()), fontStyle, currentColor, size);
+                Log.d("onClick: ", "onClick: " + formatNumber(contact.getPhoneNumber()));
+                InfoStyle infoStyle = new InfoStyle(contact.getId(), edtName.getText().toString(), formatNumber(contact.getPhoneNumber()), fontStyle, imagePath, currentColor, size, animation1);
 //                if (db.getStyleCount() != 0) {
 
 //        } else{
@@ -214,6 +250,26 @@ public class EditNameActivity extends AppCompatActivity implements View.OnClickL
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 dialogInterface.dismiss();
                                 finish();
+                            }
+                        }).show();
+                break;
+            case R.id.tv_change_background:
+                AlertDialog dialog2 = new AlertDialog.Builder(this)
+                        .setMessage("Choose photo from")
+                        .setNegativeButton("Camera", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                                startActivityForResult(cameraIntent, IMAGE_CAMERA);
+                            }
+                        })
+                        .setPositiveButton("Gallery", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                Intent intent = new Intent();
+                                intent.setType("image/*");
+                                intent.setAction(Intent.ACTION_GET_CONTENT);
+                                startActivityForResult(Intent.createChooser(intent, "Select Picture"), IMAGE_GALLERY);
                             }
                         }).show();
                 break;
@@ -238,5 +294,48 @@ public class EditNameActivity extends AppCompatActivity implements View.OnClickL
         String result = result3.replace(" ", "");
 
         return result;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == IMAGE_GALLERY) {
+            Uri uri = data.getData();
+            imagePath = uri.toString();
+            Log.d("onActivityResult", "onActivityResult: " + imagePath);
+            imgEffect.setImageURI(uri);
+        } else if (requestCode == IMAGE_CAMERA) {
+            if (data.getData() == null) {
+                Bitmap photo = (Bitmap) data.getExtras().get("data");
+                if (photo != null) {
+                    final File file = savebitmap(photo);
+                    imagePath = file.getPath();
+                    Glide.with(this).load(imagePath).into(imgEffect);
+                }
+            }
+        }
+    }
+
+    public static File savebitmap(Bitmap bmp) {
+        String extStorageDirectory = Environment.getExternalStorageDirectory().toString();
+        OutputStream outStream = null;
+        // String temp = null;
+        File file = new File(extStorageDirectory, "temp.png");
+        if (file.exists()) {
+            file.delete();
+            file = new File(extStorageDirectory, "temp.png");
+        }
+
+        try {
+            outStream = new FileOutputStream(file);
+            bmp.compress(Bitmap.CompressFormat.PNG, 100, outStream);
+            outStream.flush();
+            outStream.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        return file;
     }
 }

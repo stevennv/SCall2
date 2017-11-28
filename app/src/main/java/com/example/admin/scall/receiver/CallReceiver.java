@@ -1,9 +1,11 @@
 package com.example.admin.scall.receiver;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.example.admin.scall.activity.DetailContactActivity;
@@ -23,6 +25,7 @@ public class CallReceiver extends BroadcastReceiver {
     private static boolean isIncoming;
     private static String savedNumber;
     private SqliteHelper db;
+    private boolean isStyle;
 
     public void onCallStateChanged(Context context, int state, String number) {
         if (lastState == state) {
@@ -41,8 +44,10 @@ public class CallReceiver extends BroadcastReceiver {
                     intent.putExtra("Info", infoStyle);
                     context.startActivity(intent);
                     Toast.makeText(context, "Incoming Call Ringing", Toast.LENGTH_SHORT).show();
+                    isStyle = true;
                 } catch (Exception e) {
                     Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
+                    isStyle = false;
                 }
                 break;
             case TelephonyManager.CALL_STATE_OFFHOOK:
@@ -52,6 +57,14 @@ public class CallReceiver extends BroadcastReceiver {
                     callStartTime = new Date();
                     Toast.makeText(context, "Outgoing Call Started", Toast.LENGTH_SHORT).show();
                 }
+                try {
+                    InfoStyle infoStyle = db.getStyleById(number);
+                    Intent intent = new Intent(context, DetailContactActivity.class);
+                    intent.putExtra("Info", infoStyle);
+                    context.startActivity(intent);
+                } catch (Exception e) {
+                    Log.d("onCallStateChanged: ", "onCallStateChanged: " + e.getMessage());
+                }
 
                 break;
             case TelephonyManager.CALL_STATE_IDLE:
@@ -59,8 +72,10 @@ public class CallReceiver extends BroadcastReceiver {
                 if (lastState == TelephonyManager.CALL_STATE_RINGING) {
                     //Ring but no pickup-  a miss
                     Toast.makeText(context, "Ringing but no pickup" + savedNumber + " Call time " + callStartTime + " Date " + new Date(), Toast.LENGTH_SHORT).show();
-                } else if (isIncoming) {
 
+                } else if (isIncoming) {
+                    if (isStyle) {
+                    }
                     Toast.makeText(context, "Incoming " + savedNumber + " Call time " + callStartTime, Toast.LENGTH_SHORT).show();
                 } else {
 
@@ -82,6 +97,7 @@ public class CallReceiver extends BroadcastReceiver {
         } else {
             String stateStr = intent.getExtras().getString(TelephonyManager.EXTRA_STATE);
             String number = intent.getExtras().getString(TelephonyManager.EXTRA_INCOMING_NUMBER);
+            Log.d("onReceive:", "onReceive: " + number);
             int state = 0;
             if (stateStr.equals(TelephonyManager.EXTRA_STATE_IDLE)) {
                 state = TelephonyManager.CALL_STATE_IDLE;

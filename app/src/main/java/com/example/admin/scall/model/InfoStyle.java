@@ -7,13 +7,15 @@ import java.io.Serializable;
  */
 
 public class InfoStyle implements Serializable {
-    public InfoStyle(int id, String name, String phone, String font, int color, int size) {
+    public InfoStyle(int id, String name, String phone, String font, String urlImage, int color, int size, int animation) {
         this.id = id;
         this.phone = phone;
         this.name = name;
         this.font = font;
         this.color = color;
         this.size = size;
+        this.urlImage = urlImage;
+        this.animation = animation;
     }
 
     public InfoStyle(String name, String phone, String font, int color, int size) {
@@ -85,5 +87,25 @@ public class InfoStyle implements Serializable {
 
     public void setSize(int size) {
         this.size = size;
+    }
+
+    private int animation;
+
+    public int getAnimation() {
+        return animation;
+    }
+
+    public void setAnimation(int animation) {
+        this.animation = animation;
+    }
+
+    private String urlImage;
+
+    public String getUrlImage() {
+        return urlImage;
+    }
+
+    public void setUrlImage(String urlImage) {
+        this.urlImage = urlImage;
     }
 }
