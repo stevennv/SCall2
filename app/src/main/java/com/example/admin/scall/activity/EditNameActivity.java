@@ -19,6 +19,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.EditText;
@@ -35,6 +36,9 @@ import com.example.admin.scall.adapter.FontAdapter;
 import com.example.admin.scall.model.Contact;
 import com.example.admin.scall.model.InfoStyle;
 import com.example.admin.scall.utils.SqliteHelper;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -46,7 +50,7 @@ import java.util.List;
 import de.hdodenhof.circleimageview.CircleImageView;
 import yuku.ambilwarna.AmbilWarnaDialog;
 
-public class EditNameActivity extends AppCompatActivity implements View.OnClickListener {
+public class EditNameActivity extends BaseActivity implements View.OnClickListener {
     private TextView tvName;
     private EditText edtName;
     private RecyclerView rvFont;
@@ -62,6 +66,7 @@ public class EditNameActivity extends AppCompatActivity implements View.OnClickL
     private ImageView imgToolbar;
     private SeekBar sbTextSize;
     private ImageView imgEffect;
+    private AdView adView;
     private TextView tvChangeBackground;
     //    private InfoStyle infoStyle;
     private String fontStyle;
@@ -75,6 +80,7 @@ public class EditNameActivity extends AppCompatActivity implements View.OnClickL
     List<InfoStyle> list1 = new ArrayList<>();
     private InfoStyle infoStyle;
     private String imagePath;
+    private TextView tvAnotherEffect;
     public static final int IMAGE_GALLERY = 1;
     public static final int IMAGE_CAMERA = 2;
     private int animation1;
@@ -82,17 +88,19 @@ public class EditNameActivity extends AppCompatActivity implements View.OnClickL
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         setContentView(R.layout.activity_edit_name);
+        MobileAds.initialize(this, getString(R.string.admob_app_id));
         iniUI();
 //        getData();
     }
 
     protected void iniUI() {
         db = new SqliteHelper(this);
-
         list1 = db.getAllStyle();
         for (int i = 0; i < list1.size(); i++) {
-            Log.d("iniUI: ", "iniUI: " + list1.get(i).getName() + "   " + list1.get(0).getPhone());
+            Log.d("iniUI: ", "iniUI: " + list1.get(i).getName() + "   " + list1.get(0).getPhone() +
+                    "   " + list1.get(i).getFont() + "    " + list1.get(i).getUrlImage() + "   " + list1.get(i).getAnimation());
         }
 //        Log.d("iniUI: ", "iniUI: " + db.getStyle/("096-891-2128").getName());
         animation = AnimationUtils.loadAnimation(getApplicationContext(),
@@ -119,6 +127,10 @@ public class EditNameActivity extends AppCompatActivity implements View.OnClickL
         rlColor = (RelativeLayout) findViewById(R.id.rl_color);
         civColor = (CircleImageView) findViewById(R.id.civ_color);
         imgEffect = (ImageView) findViewById(R.id.img_effect);
+        tvAnotherEffect = (TextView) findViewById(R.id.tv_another_effect);
+        adView = (AdView) findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        adView.loadAd(adRequest);
         tvChangeBackground = (TextView) findViewById(R.id.tv_change_background);
         layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         layoutManagerEffect = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
@@ -174,6 +186,7 @@ public class EditNameActivity extends AppCompatActivity implements View.OnClickL
         rlColor.setOnClickListener(this);
         imgToolbar.setOnClickListener(this);
         tvChangeBackground.setOnClickListener(this);
+        tvAnotherEffect.setOnClickListener(this);
         edtName.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -252,6 +265,8 @@ public class EditNameActivity extends AppCompatActivity implements View.OnClickL
                                 finish();
                             }
                         }).show();
+                InfoStyle infoStyle1 = db.getStyleById("6505551212");
+                infoStyle1.getFont();
                 break;
             case R.id.tv_change_background:
                 AlertDialog dialog2 = new AlertDialog.Builder(this)
@@ -266,12 +281,16 @@ public class EditNameActivity extends AppCompatActivity implements View.OnClickL
                         .setPositiveButton("Gallery", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                Intent intent = new Intent();
-                                intent.setType("image/*");
-                                intent.setAction(Intent.ACTION_GET_CONTENT);
-                                startActivityForResult(Intent.createChooser(intent, "Select Picture"), IMAGE_GALLERY);
+                                Intent intent = new Intent(EditNameActivity.this, ImagePickerActivity.class);
+                                intent.putExtra(ImagePickerActivity.EXTRA_TYPE_PICKER,
+                                        ImagePickerActivity.GALLERY_PICKER);
+                                intent.putExtra(ImagePickerActivity.MODE, ImagePickerActivity.Mode.CROP);
+                                startActivityForResult(intent, IMAGE_GALLERY);
                             }
                         }).show();
+                break;
+            case R.id.tv_another_effect:
+
                 break;
         }
     }
@@ -300,10 +319,9 @@ public class EditNameActivity extends AppCompatActivity implements View.OnClickL
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 //        super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == IMAGE_GALLERY) {
-            Uri uri = data.getData();
-            imagePath = uri.toString();
-            Log.d("onActivityResult", "onActivityResult: " + imagePath);
-            imgEffect.setImageURI(uri);
+            ImagePickerActivity.ImageReceiver receiver = new ImagePickerActivity.ImageReceiver(data);
+            imagePath = receiver.getCroppedPath();
+            Glide.with(this).load(imagePath).into(imgEffect);
         } else if (requestCode == IMAGE_CAMERA) {
             if (data.getData() == null) {
                 Bitmap photo = (Bitmap) data.getExtras().get("data");

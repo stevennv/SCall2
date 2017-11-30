@@ -56,7 +56,6 @@ public class SqliteHelper extends SQLiteOpenHelper {
 
     public void addStyle(InfoStyle style) {
         SQLiteDatabase db = this.getWritableDatabase();
-
         ContentValues values = new ContentValues();
         values.put(KEY_NAME, style.getName()); // Contact Name
         values.put(KEY_PHONE, style.getPhone()); // Contact Phone
@@ -148,4 +147,6 @@ public class SqliteHelper extends SQLiteOpenHelper {
         // return count
         return cursor.getCount();
     }
+
+
 }

@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "1079985268482",
+    "firebase_url": "https://scall-219ae.firebaseio.com",
+    "project_id": "scall-219ae",
+    "storage_bucket": "scall-219ae.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1079985268482:android:7157840c55c6d179",
+        "android_client_info": {
+          "package_name": "com.example.admin.scall"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1079985268482-fnp1svbvieo8n0rqto2teakcme1il452.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.admin.scall",
+            "certificate_hash": "19d2cfd9ec11eac05dc9dfc9f9e7445ce92fe556"
+          }
+        },
+        {
+          "client_id": "1079985268482-lvkbfcoh2oclfr7o0ggf9mn2jlhejln9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAuPkAdrP8ORabvLe-jtIUge1i2lnG6fM4"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1079985268482-lvkbfcoh2oclfr7o0ggf9mn2jlhejln9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

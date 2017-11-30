@@ -58,4 +58,16 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="100dp"
         android:background="@mipmap/ic_end_call" />
+
+    <com.waynell.library.DropAnimationView
+        android:id="@+id/drop_animation_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:largePercent="80%"
+        app:maxSize="50dp"
+        app:minSize="30dp"
+        app:rate="100"
+        app:rotationAnimate="true"
+        app:xAnimate="true"
+        app:yAnimate="true" />
 </RelativeLayout>

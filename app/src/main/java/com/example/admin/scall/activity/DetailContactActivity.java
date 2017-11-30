@@ -1,20 +1,14 @@
 package com.example.admin.scall.activity;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.telephony.TelephonyManager;
-import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -26,16 +20,16 @@ import com.example.admin.scall.R;
 import com.example.admin.scall.model.Contact;
 import com.example.admin.scall.model.InfoStyle;
 import com.example.admin.scall.utils.SqliteHelper;
+import com.hanks.htextview.rainbow.RainbowTextView;
+import com.waynell.library.DropAnimationView;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 
 public class DetailContactActivity extends AppCompatActivity implements View.OnClickListener {
     private Contact contact;
-    public TextView tvPreview;
+    public RainbowTextView tvPreview;
     private TextView tvName;
     private TextView tvPhoneNumber;
     private ImageView imgEffect;
@@ -44,6 +38,8 @@ public class DetailContactActivity extends AppCompatActivity implements View.OnC
     private SqliteHelper db;
     private InfoStyle infoStyle;
     private ImageView imgEndCall;
+    private boolean isCalling;
+    private int[] listImage = new int[6];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,16 +49,22 @@ public class DetailContactActivity extends AppCompatActivity implements View.OnC
     }
 
     private void iniUI() {
+
         db = new SqliteHelper(this);
         tvName = (TextView) findViewById(R.id.tv_name);
         tvPhoneNumber = (TextView) findViewById(R.id.tv_phone_number);
+        tvPreview = (RainbowTextView) findViewById(R.id.tv_preview);
         imgEffect = (ImageView) findViewById(R.id.img_effect);
         imgEndCall = (ImageView) findViewById(R.id.img_end_call);
+        DropAnimationView view = (DropAnimationView) findViewById(R.id.drop_animation_view);
+        view.setDrawables(listImage);
+        view.startAnimation();
         imgEndCall.setOnClickListener(this);
         imgEffect.setOnClickListener(this);
         if (getIntent() != null) {
             String a = getIntent().getStringExtra("Main");
             if (a != null) {
+                isCalling = true;
                 contact = (Contact) getIntent().getSerializableExtra("Contact");
                 if (contact != null) {
                     tvName.setText(contact.getName());
@@ -71,6 +73,7 @@ public class DetailContactActivity extends AppCompatActivity implements View.OnC
                     tvName.setText("Ai đó");
                 }
             } else {
+                isCalling = false;
                 InfoStyle infoStyle = (InfoStyle) getIntent().getSerializableExtra("Info");
                 Typeface font = Typeface.createFromAsset(getAssets(), "fonts/" + infoStyle.getFont());
                 tvName.setTypeface(font);
@@ -80,6 +83,11 @@ public class DetailContactActivity extends AppCompatActivity implements View.OnC
                 Animation animation = AnimationUtils.loadAnimation(DetailContactActivity.this, infoStyle.getAnimation());
                 tvName.startAnimation(animation);
                 Glide.with(DetailContactActivity.this).load(infoStyle.getUrlImage()).into(imgEffect);
+                tvPreview.setVisibility(View.GONE);
+                tvPhoneNumber.setText(infoStyle.getPhone() + "  " + getString(R.string.calling));
+                tvPhoneNumber.setTypeface(font);
+                tvPhoneNumber.setTextSize(24);
+                tvPhoneNumber.setTextColor(infoStyle.getColor());
 //                Uri uri = Uri.parse(infoStyle.getUrlImage());
 //                imgEffect.setImageURI(uri);
 //                imgEffect.setImageURI(infoStyle.getUrlImage());
@@ -137,28 +145,7 @@ public class DetailContactActivity extends AppCompatActivity implements View.OnC
                         }).show();
                 break;
             case R.id.img_end_call:
-                finish();
-//                acceptCall(this);
-//                rejectCall(this);
-//                TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-//                Class clazz = null;
-//                try {
-//                    clazz = Class.forName(telephonyManager.getClass().getName());
-//                    Method method = clazz.getDeclaredMethod("getITelephony");
-//                    method.setAccessible(true);
-//                    ITelephony telephonyService = (ITelephony) method.invoke(telephonyManager);
-//                    telephonyService.endCall();
-//                } catch (ClassNotFoundException e) {
-//                    e.printStackTrace();
-//                } catch (NoSuchMethodException e) {
-//                    e.printStackTrace();
-//                } catch (IllegalAccessException e) {
-//                    e.printStackTrace();
-//                } catch (InvocationTargetException e) {
-//                    e.printStackTrace();
-//                } catch (Exception e) {
-//                    Log.d("onClick: ", "onClick: " + e.getMessage());
-//                }
+//
 
                 break;
         }

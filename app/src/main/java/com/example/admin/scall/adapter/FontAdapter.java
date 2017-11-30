@@ -42,7 +42,7 @@ public class FontAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         MyViewHolder myViewHolder = (MyViewHolder) holder;
         final String content = list[position];
         Typeface typeface = Typeface.createFromAsset(context.getAssets(), "fonts/" + content);
-        myViewHolder.tvFont.setText(contentText);
+        myViewHolder.tvFont.setText(contentText + "\n" + content);
         myViewHolder.tvFont.setTypeface(typeface);
 
         myViewHolder.llItem.setOnClickListener(new View.OnClickListener() {

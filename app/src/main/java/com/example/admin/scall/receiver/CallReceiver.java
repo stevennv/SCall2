@@ -26,6 +26,7 @@ public class CallReceiver extends BroadcastReceiver {
     private static String savedNumber;
     private SqliteHelper db;
     private boolean isStyle;
+    private DetailContactActivity mActivity;
 
     public void onCallStateChanged(Context context, int state, String number) {
         if (lastState == state) {
@@ -47,6 +48,7 @@ public class CallReceiver extends BroadcastReceiver {
                     isStyle = true;
                 } catch (Exception e) {
                     Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
+                    Log.d("onCallStateChanged:", "onCallStateChanged: " + e.getMessage());
                     isStyle = false;
                 }
                 break;
@@ -57,14 +59,15 @@ public class CallReceiver extends BroadcastReceiver {
                     callStartTime = new Date();
                     Toast.makeText(context, "Outgoing Call Started", Toast.LENGTH_SHORT).show();
                 }
-                try {
-                    InfoStyle infoStyle = db.getStyleById(number);
-                    Intent intent = new Intent(context, DetailContactActivity.class);
-                    intent.putExtra("Info", infoStyle);
-                    context.startActivity(intent);
-                } catch (Exception e) {
-                    Log.d("onCallStateChanged: ", "onCallStateChanged: " + e.getMessage());
-                }
+
+//                try {
+//                    InfoStyle infoStyle = db.getStyleById(number);
+//                    Intent intent = new Intent(context, DetailContactActivity.class);
+//                    intent.putExtra("Info", infoStyle);
+//                    context.startActivity(intent);
+//                } catch (Exception e) {
+//                    Log.d("onCallStateChanged: ", "onCallStateChanged: " + e.getMessage());
+//                }
 
                 break;
             case TelephonyManager.CALL_STATE_IDLE:
@@ -74,15 +77,18 @@ public class CallReceiver extends BroadcastReceiver {
                     Toast.makeText(context, "Ringing but no pickup" + savedNumber + " Call time " + callStartTime + " Date " + new Date(), Toast.LENGTH_SHORT).show();
 
                 } else if (isIncoming) {
-                    if (isStyle) {
-                    }
                     Toast.makeText(context, "Incoming " + savedNumber + " Call time " + callStartTime, Toast.LENGTH_SHORT).show();
                 } else {
 
                     Toast.makeText(context, "outgoing " + savedNumber + " Call time " + callStartTime + " Date " + new Date(), Toast.LENGTH_SHORT).show();
 
                 }
-
+                try {
+                    DetailContactActivity mActivity = ((DetailContactActivity) context);
+                    mActivity.finish();
+                } catch (Exception e) {
+                    Log.d("onCallStateChanged123: ", "onCallStateChanged: " + e.getMessage());
+                }
                 break;
         }
         lastState = state;

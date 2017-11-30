@@ -21,11 +21,15 @@ import com.example.admin.scall.R;
 import com.example.admin.scall.adapter.ContactAdapter;
 import com.example.admin.scall.model.Contact;
 import com.example.admin.scall.model.InfoStyle;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
     private RecyclerView rvContact;
     private RecyclerView.LayoutManager layoutManager;
     private ContactAdapter adapter;
@@ -33,60 +37,27 @@ public class MainActivity extends AppCompatActivity {
     private List<InfoStyle> list1 = new ArrayList<>();
     public static final int REQUEST_ID_MULTIPLE_PERMISSIONS = 1;
     private static final int RECORD_REQUEST_CODE = 101;
+    private AdView adView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        int permissionCheck = ContextCompat.checkSelfPermission(this,
-                Manifest.permission.READ_CONTACTS);
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.READ_CONTACTS)
-                != PackageManager.PERMISSION_GRANTED) {
-
-            // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.READ_CONTACTS)) {
-
-                // Show an explanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
-
-            } else {
-
-                // No explanation needed, we can request the permission.
-
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.READ_CONTACTS},
-                        RECORD_REQUEST_CODE);
-
-                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
-                // app-defined int constant. The callback method gets the
-                // result of the request.
-            }
-        }
-        iniUI();
-
-        getContactList();
-        checkAndRequestPermissions();
-    }
-
-    protected void makeRequest() {
+        MobileAds.initialize(this, getString(R.string.admob_app_id));
         ActivityCompat.requestPermissions(this,
-                new String[]{Manifest.permission.READ_CONTACTS},
+                new String[]{Manifest.permission.READ_CONTACTS, Manifest.permission.READ_PHONE_STATE,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE},
                 RECORD_REQUEST_CODE);
+        iniUI();
     }
 
     private void iniUI() {
-//        ActivityCompat.requestPermissions(MainActivity.this,
-//                new String[]{Manifest.permission.READ_CONTACTS},
-//                1);
-//        ActivityCompat.requestPermissions(MainActivity.this,
-//                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-//                1);
         rvContact = (RecyclerView) findViewById(R.id.rv_contact);
         layoutManager = new LinearLayoutManager(this);
         rvContact.setLayoutManager(layoutManager);
+        adView = (AdView) findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        adView.loadAd(adRequest);
 //        TelephonyManager tMgr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
 //        String mPhoneNumber = tMgr.getLine1Number();
 //        Log.d("iniUI:", "iniUI: " + mPhoneNumber);
@@ -133,23 +104,6 @@ public class MainActivity extends AppCompatActivity {
         rvContact.setAdapter(adapter);
     }
 
-    private boolean checkAndRequestPermissions() {
-        int permissionSendMessage = ContextCompat.checkSelfPermission(this,
-                Manifest.permission.READ_CONTACTS);
-        int locationPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
-        List<String> listPermissionsNeeded = new ArrayList<>();
-        if (locationPermission != PackageManager.PERMISSION_GRANTED) {
-            listPermissionsNeeded.add(Manifest.permission.ACCESS_FINE_LOCATION);
-        }
-        if (permissionSendMessage != PackageManager.PERMISSION_GRANTED) {
-            listPermissionsNeeded.add(Manifest.permission.READ_CONTACTS);
-        }
-        if (!listPermissionsNeeded.isEmpty()) {
-            ActivityCompat.requestPermissions(this, listPermissionsNeeded.toArray(new String[listPermissionsNeeded.size()]), REQUEST_ID_MULTIPLE_PERMISSIONS);
-            return false;
-        }
-        return true;
-    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -158,20 +112,10 @@ public class MainActivity extends AppCompatActivity {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                    // permission was granted, yay! Do the
-                    // contacts-related task you need to do.
-
-                } else {
-
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
+                    getContactList();
+                    return;
                 }
-                return;
             }
-
-            // other 'case' lines to check for other
-            // permissions this app might request
         }
     }
 }
