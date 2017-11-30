@@ -33,12 +33,15 @@ import com.bumptech.glide.Glide;
 import com.example.admin.scall.R;
 import com.example.admin.scall.adapter.EffectAdapter;
 import com.example.admin.scall.adapter.FontAdapter;
+import com.example.admin.scall.adapter.IconAdapter;
+import com.example.admin.scall.adapter.SelectedAdapter;
 import com.example.admin.scall.model.Contact;
 import com.example.admin.scall.model.InfoStyle;
 import com.example.admin.scall.utils.SqliteHelper;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
+import com.waynell.library.DropAnimationView;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -58,6 +61,8 @@ public class EditNameActivity extends BaseActivity implements View.OnClickListen
     private CircleImageView civColor;
     private RecyclerView.LayoutManager layoutManager;
     private RecyclerView.LayoutManager layoutManagerEffect;
+    private RecyclerView.LayoutManager layoutManagerSelected;
+    private RecyclerView.LayoutManager layoutManagerIcon;
     private String[] list;
     private FontAdapter adapter;
     private int currentColor;
@@ -68,6 +73,8 @@ public class EditNameActivity extends BaseActivity implements View.OnClickListen
     private ImageView imgEffect;
     private AdView adView;
     private TextView tvChangeBackground;
+    private RecyclerView rvListSelected;
+    private RecyclerView rvListIcon;
     //    private InfoStyle infoStyle;
     private String fontStyle;
     private int size;
@@ -84,6 +91,12 @@ public class EditNameActivity extends BaseActivity implements View.OnClickListen
     public static final int IMAGE_GALLERY = 1;
     public static final int IMAGE_CAMERA = 2;
     private int animation1;
+    private IconAdapter adapterIcon;
+    private SelectedAdapter adapterSelected;
+    private int[] listSelected = new int[6];
+    private int[] listIcon = new int[23];
+    private int posSelected;
+    private DropAnimationView dropView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,12 +109,18 @@ public class EditNameActivity extends BaseActivity implements View.OnClickListen
     }
 
     protected void iniUI() {
+        listIcon = new int[]{R.mipmap.ic_love, R.mipmap.agnes_happy, R.mipmap.agnes_overjoyed, R.mipmap.agnes_sad, R.mipmap.edith,
+                R.mipmap.gru, R.mipmap.gru2, R.mipmap.margo, R.mipmap.minion_amazed, R.mipmap.minion_angry, R.mipmap.minion_bananas,
+                R.mipmap.minion_big, R.mipmap.minion_curious, R.mipmap.minion_dancing, R.mipmap.minion_duck, R.mipmap.minion_evil,
+                R.mipmap.minion_evil2, R.mipmap.minion_evil_run, R.mipmap.minion_fruit, R.mipmap.minion_girl, R.mipmap.minion_golf,
+                R.mipmap.minion_happy, R.mipmap.minion_jumping, R.mipmap.minion_kungfu, R.mipmap.minion_maid, R.mipmap.minion_please, R.mipmap.minion_sad,
+                R.mipmap.minion_shout, R.mipmap.minion_tongue, R.mipmap.minion_wave, R.mipmap.minion_write};
         db = new SqliteHelper(this);
-        list1 = db.getAllStyle();
-        for (int i = 0; i < list1.size(); i++) {
-            Log.d("iniUI: ", "iniUI: " + list1.get(i).getName() + "   " + list1.get(0).getPhone() +
-                    "   " + list1.get(i).getFont() + "    " + list1.get(i).getUrlImage() + "   " + list1.get(i).getAnimation());
-        }
+//        list1 = db.getAllStyle();
+//        for (int i = 0; i < list1.size(); i++) {
+//            Log.d("iniUI: ", "iniUI: " + list1.get(i).getName() + "   " + list1.get(0).getPhone() +
+//                    "   " + list1.get(i).getFont() + "    " + list1.get(i).getUrlImage() + "   " + list1.get(i).getAnimation());
+//        }
 //        Log.d("iniUI: ", "iniUI: " + db.getStyle/("096-891-2128").getName());
         animation = AnimationUtils.loadAnimation(getApplicationContext(),
                 R.anim.bounce);
@@ -117,6 +136,8 @@ public class EditNameActivity extends BaseActivity implements View.OnClickListen
         });
         sbTextSize = (SeekBar) findViewById(R.id.sb_text_size);
         tvTitleToolbar = (TextView) findViewById(R.id.tv_title_toolbar_2);
+        dropView = (DropAnimationView) findViewById(R.id.drop_animation_view);
+
         tvTitleToolbar.setText(getString(R.string.make_your_style));
         imgToolbar = (ImageView) findViewById(R.id.img_menu_toolbar);
         imgToolbar.setImageResource(R.mipmap.ic_save);
@@ -124,6 +145,8 @@ public class EditNameActivity extends BaseActivity implements View.OnClickListen
         edtName = (EditText) findViewById(R.id.edt_name);
         rvFont = (RecyclerView) findViewById(R.id.rv_font);
         rvEffect = (RecyclerView) findViewById(R.id.rv_effect);
+        rvListIcon = (RecyclerView) findViewById(R.id.rv_list_icon);
+        rvListSelected = (RecyclerView) findViewById(R.id.rv_list_selected);
         rlColor = (RelativeLayout) findViewById(R.id.rl_color);
         civColor = (CircleImageView) findViewById(R.id.civ_color);
         imgEffect = (ImageView) findViewById(R.id.img_effect);
@@ -133,8 +156,12 @@ public class EditNameActivity extends BaseActivity implements View.OnClickListen
         adView.loadAd(adRequest);
         tvChangeBackground = (TextView) findViewById(R.id.tv_change_background);
         layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        layoutManagerSelected = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        layoutManagerIcon = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         layoutManagerEffect = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         rvFont.setLayoutManager(layoutManager);
+        rvListIcon.setLayoutManager(layoutManagerIcon);
+        rvListSelected.setLayoutManager(layoutManagerSelected);
         rvEffect.setLayoutManager(layoutManagerEffect);
         tvName.measure(0, 0);
         if (getIntent() != null) {
@@ -187,6 +214,33 @@ public class EditNameActivity extends BaseActivity implements View.OnClickListen
         imgToolbar.setOnClickListener(this);
         tvChangeBackground.setOnClickListener(this);
         tvAnotherEffect.setOnClickListener(this);
+        adapterIcon = new IconAdapter(this, listIcon, new IconAdapter.onClickItem() {
+            @Override
+            public void click(int values) {
+                if (posSelected == 6) {
+                    posSelected = 0;
+                }
+                listSelected[posSelected] = values;
+
+                for (int i = 0; i < listSelected.length; i++) {
+                    Log.d("iniUI123123_Selected", "click: " + listSelected[i]);
+                }
+                posSelected++;
+                adapterSelected = new SelectedAdapter(EditNameActivity.this, listSelected);
+                adapterSelected.notifyDataSetChanged();
+                rvListSelected.setAdapter(adapterSelected);
+//                adapterSelected = new SelectedAdapter(EditNameActivity.this, listSelected);
+//                adapterSelected.notifyDataSetChanged();
+
+            }
+        });
+
+        adapterIcon.notifyDataSetChanged();
+        rvListIcon.setAdapter(adapterIcon);
+
+        for (int i = 0; i < listSelected.length; i++) {
+            Log.d("iniUI123123F", "iniUI: " + listSelected[i]);
+        }
         edtName.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -290,7 +344,8 @@ public class EditNameActivity extends BaseActivity implements View.OnClickListen
                         }).show();
                 break;
             case R.id.tv_another_effect:
-
+                dropView.setDrawables(listSelected);
+                dropView.startAnimation();
                 break;
         }
     }

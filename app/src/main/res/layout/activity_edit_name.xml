@@ -25,6 +25,18 @@
             app:colorSpace="150dp"
             app:colorSpeed="4dp" />
 
+        <com.waynell.library.DropAnimationView
+            android:id="@+id/drop_animation_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:largePercent="80%"
+            app:maxSize="50dp"
+            app:minSize="30dp"
+            app:rate="100"
+            app:rotationAnimate="true"
+            app:xAnimate="true"
+            app:yAnimate="true" />
+
         <ImageView
             android:id="@+id/img_effect"
             android:layout_width="match_parent"
@@ -150,7 +162,7 @@
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/rv_effect"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
+                    android:layout_height="100dp"
                     android:layout_marginTop="@dimen/padding_10" />
 
                 <View
@@ -159,25 +171,26 @@
                     android:layout_marginTop="@dimen/padding_10"
                     android:background="@color/black" />
 
-                <RelativeLayout
+                <TextView
+                    android:id="@+id/tv_another_effect"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/padding_10"
+                    android:padding="@dimen/padding_10"
+                    android:text="@string/another_effect"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size_16" />
 
-                    <TextView
-                        android:id="@+id/tv_another_effect"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/padding_10"
-                        android:padding="@dimen/padding_10"
-                        android:text="@string/another_effect"
-                        android:textColor="@color/black"
-                        android:textSize="@dimen/text_size_16" />
-                    <RelativeLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/rv_list_selected"
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp" />
 
-                    </RelativeLayout>
-                </RelativeLayout>
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/rv_list_icon"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/padding_10" />
             </LinearLayout>
         </ScrollView>
 

@@ -57,7 +57,7 @@ public class DetailContactActivity extends AppCompatActivity implements View.OnC
         imgEffect = (ImageView) findViewById(R.id.img_effect);
         imgEndCall = (ImageView) findViewById(R.id.img_end_call);
         DropAnimationView view = (DropAnimationView) findViewById(R.id.drop_animation_view);
-        view.setDrawables(listImage);
+        view.setDrawables(R.mipmap.ic_love, R.mipmap.ic_love, R.mipmap.ic_love, R.mipmap.ic_love, R.mipmap.ic_love);
         view.startAnimation();
         imgEndCall.setOnClickListener(this);
         imgEffect.setOnClickListener(this);
