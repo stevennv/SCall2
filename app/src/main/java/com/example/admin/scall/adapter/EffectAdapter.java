@@ -36,15 +36,20 @@ public class EffectAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
         MyViewHolder myViewHolder = (MyViewHolder) holder;
         final int effect = list[position];
         myViewHolder.img.setVisibility(View.GONE);
-        myViewHolder.tvFont.setText((position + 1) + "");
+        if (position == 0) {
+            myViewHolder.tvFont.setText(context.getString(R.string.cancel));
+        } else {
+            myViewHolder.tvFont.setText((position + 1) + "");
+        }
+
         myViewHolder.llItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                clickItem.click(effect);
+                clickItem.click(effect, position);
             }
         });
     }
@@ -55,7 +60,7 @@ public class EffectAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     }
 
     public interface clickItem {
-        void click(int value);
+        void click(int value, int pos);
     }
 
     class MyViewHolder extends RecyclerView.ViewHolder {

@@ -14,16 +14,6 @@
         android:layout_height="200dp"
         android:gravity="center">
 
-        <com.hanks.htextview.rainbow.RainbowTextView
-            android:id="@+id/tv_preview"
-            android:layout_width="120dp"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:padding="@dimen/padding_10"
-            android:text="@string/preview"
-            android:textSize="20sp"
-            app:colorSpace="150dp"
-            app:colorSpeed="4dp" />
 
         <com.waynell.library.DropAnimationView
             android:id="@+id/drop_animation_view"
@@ -40,15 +30,26 @@
         <ImageView
             android:id="@+id/img_effect"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scaleType="fitXY" />
+            android:layout_height="match_parent" />
 
         <TextView
             android:id="@+id/tv_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
+            android:gravity="center"
             android:textColor="@color/black" />
+
+        <com.hanks.htextview.rainbow.RainbowTextView
+            android:id="@+id/tv_preview"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:padding="@dimen/padding_10"
+            android:text="@string/preview"
+            android:textSize="20sp"
+            app:colorSpace="150dp"
+            app:colorSpeed="4dp" />
     </RelativeLayout>
 
     <RelativeLayout
@@ -74,14 +75,26 @@
                     android:padding="@dimen/padding_10"
                     android:textColor="@color/black" />
 
-                <TextView
-                    android:id="@+id/tv_change_background"
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="@dimen/padding_10"
-                    android:text="@string/background"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/text_size_16" />
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:id="@+id/tv_change_background"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/padding_10"
+                        android:text="@string/background"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/text_size_16" />
+
+                    <CheckBox
+                        android:id="@+id/check_full"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true" />
+                </RelativeLayout>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -171,15 +184,27 @@
                     android:layout_marginTop="@dimen/padding_10"
                     android:background="@color/black" />
 
-                <TextView
-                    android:id="@+id/tv_another_effect"
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/padding_10"
-                    android:padding="@dimen/padding_10"
-                    android:text="@string/another_effect"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/text_size_16" />
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:id="@+id/tv_another_effect"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/padding_10"
+                        android:padding="@dimen/padding_10"
+                        android:text="@string/another_effect"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/text_size_16" />
+
+                    <CheckBox
+                        android:id="@+id/checkbox"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true" />
+                </RelativeLayout>
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/rv_list_selected"

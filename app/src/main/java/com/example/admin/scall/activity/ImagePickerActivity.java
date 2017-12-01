@@ -265,8 +265,8 @@ public class ImagePickerActivity extends FragmentActivity {
             intent.setData(mImageCaptureUri);
             intent.putExtra("outputX", width);
             intent.putExtra("outputY", width);
-            intent.putExtra("aspectX", 1);
-            intent.putExtra("aspectY", 1);
+//            intent.putExtra("aspectX", 1);
+//            intent.putExtra("aspectY", 1);
             UUID random = UUID.randomUUID();
             File file = new File(getExternalFilesDir(null), random + ".jpg");
             try {

@@ -16,10 +16,12 @@ import com.example.admin.scall.R;
 public class SelectedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private Context context;
     private int[] list;
+    private onClick onClick;
 
-    public SelectedAdapter(Context context, int[] list) {
+    public SelectedAdapter(Context context, int[] list, onClick onClick) {
         this.context = context;
         this.list = list;
+        this.onClick = onClick;
     }
 
     @Override
@@ -41,6 +43,7 @@ public class SelectedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             public void onClick(View view) {
                 list[position] = 0;
                 notifyDataSetChanged();
+                onClick.click(position);
             }
         });
     }
@@ -57,5 +60,9 @@ public class SelectedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             super(itemView);
             imgIcon = (ImageView) itemView.findViewById(R.id.img_icon);
         }
+    }
+
+    public interface onClick {
+        void click(int pos);
     }
 }

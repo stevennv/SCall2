@@ -10,6 +10,7 @@
     <string name="background">Background</string>
     <string name="calling"> Calling</string>
     <string name="another_effect">Another Effect</string>
+    <string name="cancel">cancel</string>
     <string name="admob_app_id">ca-app-pub-3940256099942544~3347511713</string>
     <string name="interstitial_ads">ca-app-pub-3940256099942544/1033173712</string>
 </resources>

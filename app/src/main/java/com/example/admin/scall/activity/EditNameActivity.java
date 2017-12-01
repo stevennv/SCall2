@@ -22,6 +22,8 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -41,6 +43,7 @@ import com.example.admin.scall.utils.SqliteHelper;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
+import com.google.gson.Gson;
 import com.waynell.library.DropAnimationView;
 
 import java.io.File;
@@ -75,16 +78,18 @@ public class EditNameActivity extends BaseActivity implements View.OnClickListen
     private TextView tvChangeBackground;
     private RecyclerView rvListSelected;
     private RecyclerView rvListIcon;
+    private CheckBox checkBox;
+    private CheckBox checkFull;
     //    private InfoStyle infoStyle;
     private String fontStyle;
     private int size;
     private Contact contact;
     private Animation animation;
     private RecyclerView rvEffect;
-    private int[] listEffect = {R.anim.bounce, R.anim.rotate, R.anim.custom_anim1};
+    private int[] listEffect = {0, R.anim.bounce, R.anim.rotate, R.anim.custom_anim1, R.anim.pump_top, R.anim.fade_in, R.anim.grow_from_bottom};
     private EffectAdapter effectAdapter;
     private SqliteHelper db;
-    List<InfoStyle> list1 = new ArrayList<>();
+    private List<InfoStyle> list1 = new ArrayList<>();
     private InfoStyle infoStyle;
     private String imagePath;
     private TextView tvAnotherEffect;
@@ -97,6 +102,11 @@ public class EditNameActivity extends BaseActivity implements View.OnClickListen
     private int[] listIcon = new int[23];
     private int posSelected;
     private DropAnimationView dropView;
+    private TextView tvPreview;
+    private String listIconString;
+    private Gson gson;
+    private boolean isAnother;
+    private InfoStyle infoStyle2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,23 +119,23 @@ public class EditNameActivity extends BaseActivity implements View.OnClickListen
     }
 
     protected void iniUI() {
+        gson = new Gson();
         listIcon = new int[]{R.mipmap.ic_love, R.mipmap.agnes_happy, R.mipmap.agnes_overjoyed, R.mipmap.agnes_sad, R.mipmap.edith,
                 R.mipmap.gru, R.mipmap.gru2, R.mipmap.margo, R.mipmap.minion_amazed, R.mipmap.minion_angry, R.mipmap.minion_bananas,
                 R.mipmap.minion_big, R.mipmap.minion_curious, R.mipmap.minion_dancing, R.mipmap.minion_duck, R.mipmap.minion_evil,
                 R.mipmap.minion_evil2, R.mipmap.minion_evil_run, R.mipmap.minion_fruit, R.mipmap.minion_girl, R.mipmap.minion_golf,
                 R.mipmap.minion_happy, R.mipmap.minion_jumping, R.mipmap.minion_kungfu, R.mipmap.minion_maid, R.mipmap.minion_please, R.mipmap.minion_sad,
-                R.mipmap.minion_shout, R.mipmap.minion_tongue, R.mipmap.minion_wave, R.mipmap.minion_write};
+                R.mipmap.minion_shout, R.mipmap.minion_tongue, R.mipmap.minion_wave, R.mipmap.minion_write,
+                R.mipmap.emo1, R.mipmap.emo2, R.mipmap.emo3, R.mipmap.emo4, R.mipmap.emo5, R.mipmap.emo6, R.mipmap.emo7,
+                R.mipmap.emo8, R.mipmap.emo9, R.mipmap.emo10, R.mipmap.emo11, R.mipmap.emo12, R.mipmap.emo13, R.mipmap.emo14, R.mipmap.emo15,
+                R.mipmap.emo16, R.mipmap.emo17, R.mipmap.emo18, R.mipmap.emo19, R.mipmap.emo20, R.mipmap.emo21, R.mipmap.emo22, R.mipmap.emo23,
+                R.mipmap.emo24, R.mipmap.emo25, R.mipmap.emo26, R.mipmap.emo27, R.mipmap.emo28, R.mipmap.emo29, R.mipmap.emo30, R.mipmap.emo31, R.mipmap.emo32,
+                R.mipmap.emo33, R.mipmap.emo34, R.mipmap.emo35, R.mipmap.emo36, R.mipmap.emo37, R.mipmap.emo38, R.mipmap.emo39};
         db = new SqliteHelper(this);
-//        list1 = db.getAllStyle();
-//        for (int i = 0; i < list1.size(); i++) {
-//            Log.d("iniUI: ", "iniUI: " + list1.get(i).getName() + "   " + list1.get(0).getPhone() +
-//                    "   " + list1.get(i).getFont() + "    " + list1.get(i).getUrlImage() + "   " + list1.get(i).getAnimation());
-//        }
-//        Log.d("iniUI: ", "iniUI: " + db.getStyle/("096-891-2128").getName());
         animation = AnimationUtils.loadAnimation(getApplicationContext(),
                 R.anim.bounce);
         currentColor = ContextCompat.getColor(this, R.color.colorAccent);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -134,27 +144,29 @@ public class EditNameActivity extends BaseActivity implements View.OnClickListen
                 finish();
             }
         });
-        sbTextSize = (SeekBar) findViewById(R.id.sb_text_size);
-        tvTitleToolbar = (TextView) findViewById(R.id.tv_title_toolbar_2);
-        dropView = (DropAnimationView) findViewById(R.id.drop_animation_view);
-
+        sbTextSize = findViewById(R.id.sb_text_size);
+        tvTitleToolbar = findViewById(R.id.tv_title_toolbar_2);
+        dropView = findViewById(R.id.drop_animation_view);
+        tvPreview = findViewById(R.id.tv_preview);
         tvTitleToolbar.setText(getString(R.string.make_your_style));
-        imgToolbar = (ImageView) findViewById(R.id.img_menu_toolbar);
+        imgToolbar = findViewById(R.id.img_menu_toolbar);
         imgToolbar.setImageResource(R.mipmap.ic_save);
-        tvName = (TextView) findViewById(R.id.tv_name);
-        edtName = (EditText) findViewById(R.id.edt_name);
-        rvFont = (RecyclerView) findViewById(R.id.rv_font);
-        rvEffect = (RecyclerView) findViewById(R.id.rv_effect);
-        rvListIcon = (RecyclerView) findViewById(R.id.rv_list_icon);
-        rvListSelected = (RecyclerView) findViewById(R.id.rv_list_selected);
-        rlColor = (RelativeLayout) findViewById(R.id.rl_color);
-        civColor = (CircleImageView) findViewById(R.id.civ_color);
-        imgEffect = (ImageView) findViewById(R.id.img_effect);
-        tvAnotherEffect = (TextView) findViewById(R.id.tv_another_effect);
-        adView = (AdView) findViewById(R.id.adView);
+        tvName = findViewById(R.id.tv_name);
+        edtName = findViewById(R.id.edt_name);
+        rvFont = findViewById(R.id.rv_font);
+        rvEffect = findViewById(R.id.rv_effect);
+        rvListIcon = findViewById(R.id.rv_list_icon);
+        rvListSelected = findViewById(R.id.rv_list_selected);
+        rlColor = findViewById(R.id.rl_color);
+        civColor = findViewById(R.id.civ_color);
+        imgEffect = findViewById(R.id.img_effect);
+        tvAnotherEffect = findViewById(R.id.tv_another_effect);
+        checkBox = findViewById(R.id.checkbox);
+        checkFull = findViewById(R.id.check_full);
+        adView = findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         adView.loadAd(adRequest);
-        tvChangeBackground = (TextView) findViewById(R.id.tv_change_background);
+        tvChangeBackground = findViewById(R.id.tv_change_background);
         layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         layoutManagerSelected = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         layoutManagerIcon = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
@@ -164,6 +176,22 @@ public class EditNameActivity extends BaseActivity implements View.OnClickListen
         rvListSelected.setLayoutManager(layoutManagerSelected);
         rvEffect.setLayoutManager(layoutManagerEffect);
         tvName.measure(0, 0);
+        checkFull.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b) {
+                    imgEffect.setScaleType(ImageView.ScaleType.FIT_XY);
+                } else {
+                    imgEffect.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                }
+            }
+        });
+        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                isAnother = b;
+            }
+        });
         if (getIntent() != null) {
             contact = (Contact) getIntent().getSerializableExtra("Contact");
             edtName.setText(contact.getName());
@@ -198,12 +226,26 @@ public class EditNameActivity extends BaseActivity implements View.OnClickListen
         }, contact.getName());
         effectAdapter = new EffectAdapter(this, listEffect, new EffectAdapter.clickItem() {
             @Override
-            public void click(int value) {
-                animation.cancel();
-                animation1 = value;
-                animation = AnimationUtils.loadAnimation(getApplicationContext(),
-                        value);
-                tvName.startAnimation(animation);
+            public void click(int value, int pos) {
+                if (pos == 0) {
+                    if (animation1 != 0) {
+                        tvName.clearAnimation();
+                        animation1 = 0;
+                    }
+                } else {
+                    if (animation != null) {
+                        animation.cancel();
+                        animation1 = value;
+                        animation = AnimationUtils.loadAnimation(getApplicationContext(),
+                                value);
+                        tvName.startAnimation(animation);
+                    } else {
+                        animation1 = value;
+                        animation = AnimationUtils.loadAnimation(getApplicationContext(),
+                                value);
+                        tvName.startAnimation(animation);
+                    }
+                }
             }
         });
         effectAdapter.notifyDataSetChanged();
@@ -214,33 +256,30 @@ public class EditNameActivity extends BaseActivity implements View.OnClickListen
         imgToolbar.setOnClickListener(this);
         tvChangeBackground.setOnClickListener(this);
         tvAnotherEffect.setOnClickListener(this);
+        tvPreview.setOnClickListener(this);
         adapterIcon = new IconAdapter(this, listIcon, new IconAdapter.onClickItem() {
             @Override
             public void click(int values) {
-                if (posSelected == 6) {
-                    posSelected = 0;
-                }
-                listSelected[posSelected] = values;
+                if (isAnother) {
+                    if (posSelected == 6) {
+                        posSelected = 0;
+                    }
+                    listSelected[posSelected] = values;
 
-                for (int i = 0; i < listSelected.length; i++) {
-                    Log.d("iniUI123123_Selected", "click: " + listSelected[i]);
-                }
-                posSelected++;
-                adapterSelected = new SelectedAdapter(EditNameActivity.this, listSelected);
-                adapterSelected.notifyDataSetChanged();
-                rvListSelected.setAdapter(adapterSelected);
-//                adapterSelected = new SelectedAdapter(EditNameActivity.this, listSelected);
-//                adapterSelected.notifyDataSetChanged();
 
+                    posSelected++;
+                    adapterSelected = new SelectedAdapter(EditNameActivity.this, listSelected, new SelectedAdapter.onClick() {
+                        @Override
+                        public void click(int pos) {
+
+                        }
+                    });
+                }
             }
         });
-
+        rvListSelected.setAdapter(adapterSelected);
         adapterIcon.notifyDataSetChanged();
         rvListIcon.setAdapter(adapterIcon);
-
-        for (int i = 0; i < listSelected.length; i++) {
-            Log.d("iniUI123123F", "iniUI: " + listSelected[i]);
-        }
         edtName.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -286,7 +325,6 @@ public class EditNameActivity extends BaseActivity implements View.OnClickListen
                 AmbilWarnaDialog dialog = new AmbilWarnaDialog(this, currentColor, true, new AmbilWarnaDialog.OnAmbilWarnaListener() {
                     @Override
                     public void onCancel(AmbilWarnaDialog dialog) {
-
                     }
 
                     @Override
@@ -299,17 +337,19 @@ public class EditNameActivity extends BaseActivity implements View.OnClickListen
                 dialog.show();
                 break;
             case R.id.img_menu_toolbar:
-                Log.d("onClick: ", "onClick: " + formatNumber(contact.getPhoneNumber()));
-                InfoStyle infoStyle = new InfoStyle(contact.getId(), edtName.getText().toString(), formatNumber(contact.getPhoneNumber()), fontStyle, imagePath, currentColor, size, animation1);
-//                if (db.getStyleCount() != 0) {
+                if (isAnother) {
+                    if (!checkIcon(listSelected)) {
+                        listIconString = gson.toJson(listSelected);
+                        InfoStyle infoStyle = new InfoStyle(contact.getId(), edtName.getText().toString(), formatNumber(contact.getPhoneNumber()),
+                                fontStyle, imagePath, currentColor, size, animation1, listIconString);
+                        saveAndUpdateStyle(infoStyle);
+                    }
+                } else {
+                    InfoStyle infoStyle = new InfoStyle(contact.getId(), edtName.getText().toString(), formatNumber(contact.getPhoneNumber()),
+                            fontStyle, imagePath, currentColor, size, animation1, listIconString);
+                    saveAndUpdateStyle(infoStyle);
+                }
 
-//        } else{
-//            db.addStyle(infoStyle);
-//                }
-//                if (db.getContact(contact.getPhoneNumber())!=null){
-//                    db.updateContact()
-//                }
-                saveAndUpdateStyle(infoStyle);
                 AlertDialog dialog1 = new AlertDialog.Builder(this)
                         .setMessage(getString(R.string.save_success))
                         .setNegativeButton("ok", new DialogInterface.OnClickListener() {
@@ -319,8 +359,6 @@ public class EditNameActivity extends BaseActivity implements View.OnClickListen
                                 finish();
                             }
                         }).show();
-                InfoStyle infoStyle1 = db.getStyleById("6505551212");
-                infoStyle1.getFont();
                 break;
             case R.id.tv_change_background:
                 AlertDialog dialog2 = new AlertDialog.Builder(this)
@@ -344,8 +382,33 @@ public class EditNameActivity extends BaseActivity implements View.OnClickListen
                         }).show();
                 break;
             case R.id.tv_another_effect:
-                dropView.setDrawables(listSelected);
-                dropView.startAnimation();
+                if (isAnother) {
+                    if (!checkIcon(listSelected)) {
+                        dropView.setDrawables(listSelected);
+                        dropView.startAnimation();
+                    } else {
+                        Toast.makeText(this, "Chọn đúng 6 icon", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                break;
+            case R.id.tv_preview:
+                if (isAnother) {
+                    if (!checkIcon(listSelected)) {
+                        listIconString = gson.toJson(listSelected);
+                        infoStyle2 = new InfoStyle(contact.getId(), edtName.getText().toString(), contact.getPhoneNumber(), fontStyle,
+                                imagePath, currentColor, size, animation1, listIconString);
+                    } else {
+                        Toast.makeText(this, "Failure", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    infoStyle2 = new InfoStyle(contact.getId(), edtName.getText().toString(), contact.getPhoneNumber(), fontStyle,
+                            imagePath, currentColor, size, animation1, listIconString);
+                }
+                Intent i = new Intent(this, DetailContactActivity.class);
+                i.putExtra("Main", "Abc");
+                i.putExtra("InfoStyle", infoStyle2);
+                startActivity(i);
+
                 break;
         }
     }
@@ -366,7 +429,6 @@ public class EditNameActivity extends BaseActivity implements View.OnClickListen
         String result2 = result1.replace("(", "");
         String result3 = result2.replace(")", "");
         String result = result3.replace(" ", "");
-
         return result;
     }
 
@@ -410,5 +472,18 @@ public class EditNameActivity extends BaseActivity implements View.OnClickListen
             return null;
         }
         return file;
+    }
+
+    private boolean checkIcon(int[] array) {
+        boolean check = false;
+        for (int i = 0; i < array.length; i++) {
+            if (array[i] == 0) {
+                check = true;
+                break;
+            } else {
+                check = false;
+            }
+        }
+        return check;
     }
 }

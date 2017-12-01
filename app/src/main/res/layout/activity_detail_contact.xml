@@ -8,6 +8,7 @@
     android:orientation="vertical"
     tools:context="com.example.admin.scall.activity.DetailContactActivity">
 
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -30,6 +31,18 @@
             app:colorSpace="150dp"
             app:colorSpeed="4dp" />
     </RelativeLayout>
+
+    <com.waynell.library.DropAnimationView
+        android:id="@+id/drop_animation_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:largePercent="80%"
+        app:maxSize="50dp"
+        app:minSize="30dp"
+        app:rate="100"
+        app:rotationAnimate="true"
+        app:xAnimate="true"
+        app:yAnimate="true" />
 
     <TextView
         android:id="@+id/tv_name"
@@ -59,15 +72,5 @@
         android:layout_marginBottom="100dp"
         android:background="@mipmap/ic_end_call" />
 
-    <com.waynell.library.DropAnimationView
-        android:id="@+id/drop_animation_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:largePercent="80%"
-        app:maxSize="50dp"
-        app:minSize="30dp"
-        app:rate="100"
-        app:rotationAnimate="true"
-        app:xAnimate="true"
-        app:yAnimate="true" />
+
 </RelativeLayout>
