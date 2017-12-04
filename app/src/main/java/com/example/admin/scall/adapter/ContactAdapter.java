@@ -58,7 +58,7 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 intent.putExtra("Contact", contact);
                 String phoneFormat = Utils.formatNumber(contact.getPhoneNumber());
                 try {
-                    InfoStyle infoStyle = db.getStyleById(phoneFormat);
+                    InfoStyle infoStyle = db.getStyleById(String.valueOf(contact.getId()));
                     intent.putExtra("Style", infoStyle);
                 } catch (Exception e) {
                     Log.d("onClick:", "onClick: " + e.getMessage());

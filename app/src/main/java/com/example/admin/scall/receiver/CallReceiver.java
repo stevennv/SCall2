@@ -39,9 +39,9 @@ public class CallReceiver extends BroadcastReceiver {
                 callStartTime = new Date();
                 savedNumber = number;
                 try {
-                    db.getStyleById(number);
+//                    db.getStyleByPhone(number);
                     Intent intent = new Intent(context, DetailContactActivity.class);
-                    InfoStyle infoStyle = db.getStyleById(number);
+                    InfoStyle infoStyle = db.getStyleByPhone(number);
                     intent.putExtra("Info", infoStyle);
                     context.startActivity(intent);
                     Toast.makeText(context, "Incoming Call Ringing", Toast.LENGTH_SHORT).show();

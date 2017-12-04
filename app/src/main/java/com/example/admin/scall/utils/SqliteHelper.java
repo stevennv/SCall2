@@ -3,6 +3,7 @@ package com.example.admin.scall.utils;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -58,6 +59,7 @@ public class SqliteHelper extends SQLiteOpenHelper {
     public void addStyle(InfoStyle style) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
+        values.put(KEY_ID, style.getId());
         values.put(KEY_NAME, style.getName()); // Contact Name
         values.put(KEY_PHONE, style.getPhone()); // Contact Phone
         values.put(KEY_FONT, style.getFont()); // Contact Phone
@@ -72,6 +74,21 @@ public class SqliteHelper extends SQLiteOpenHelper {
     }
 
     public InfoStyle getStyleById(String phone) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.query(TABLE_STYLE, new String[]{KEY_ID,
+                        KEY_NAME, KEY_PHONE, KEY_FONT, KEY_URL_IMAGE, KEY_COLOR, KEY_SIZE, KEY_ANIMATION, KEY_ICON}, KEY_ID + "=?",
+                new String[]{phone}, null, null, null, null);
+        if (cursor != null)
+            cursor.moveToFirst();
+
+        InfoStyle style = new InfoStyle(Integer.parseInt(cursor.getString(0)), cursor.getString(1),
+                cursor.getString(2), cursor.getString(3), cursor.getString(4), Integer.parseInt(cursor.getString(5)), Integer.parseInt(cursor.getString(6)), Integer.parseInt(cursor.getString(7)), cursor.getString(8));
+        // return contact
+        return style;
+    }
+
+    public InfoStyle getStyleByPhone(String phone) {
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.query(TABLE_STYLE, new String[]{KEY_ID,
@@ -120,6 +137,7 @@ public class SqliteHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
+//        values.put(KEY_ID, style.getId());
         values.put(KEY_NAME, style.getName());
         values.put(KEY_PHONE, style.getPhone());
         values.put(KEY_FONT, style.getFont());
@@ -128,8 +146,9 @@ public class SqliteHelper extends SQLiteOpenHelper {
         values.put(KEY_SIZE, style.getSize());
         values.put(KEY_ANIMATION, style.getAnimation());
         values.put(KEY_ICON, style.getListIcon());
+
         // updating row
-        return db.update(TABLE_STYLE, values, KEY_ID + " = ?",
+        return db.update(TABLE_STYLE, values, KEY_ID + " = ? ",
                 new String[]{String.valueOf(style.getId())});
     }
 

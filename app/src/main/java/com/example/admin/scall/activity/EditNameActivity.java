@@ -39,6 +39,7 @@ import com.example.admin.scall.adapter.IconAdapter;
 import com.example.admin.scall.adapter.SelectedAdapter;
 import com.example.admin.scall.model.Contact;
 import com.example.admin.scall.model.InfoStyle;
+import com.example.admin.scall.utils.DBManager;
 import com.example.admin.scall.utils.SqliteHelper;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -99,7 +100,7 @@ public class EditNameActivity extends BaseActivity implements View.OnClickListen
     private IconAdapter adapterIcon;
     private SelectedAdapter adapterSelected;
     private int[] listSelected = new int[6];
-    private int[] listIcon = new int[23];
+    private int[] listIcon = new int[70];
     private int posSelected;
     private DropAnimationView dropView;
     private TextView tvPreview;
@@ -107,6 +108,8 @@ public class EditNameActivity extends BaseActivity implements View.OnClickListen
     private Gson gson;
     private boolean isAnother;
     private InfoStyle infoStyle2;
+    private int[] listImage;
+    private DBManager manager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -132,9 +135,11 @@ public class EditNameActivity extends BaseActivity implements View.OnClickListen
                 R.mipmap.emo24, R.mipmap.emo25, R.mipmap.emo26, R.mipmap.emo27, R.mipmap.emo28, R.mipmap.emo29, R.mipmap.emo30, R.mipmap.emo31, R.mipmap.emo32,
                 R.mipmap.emo33, R.mipmap.emo34, R.mipmap.emo35, R.mipmap.emo36, R.mipmap.emo37, R.mipmap.emo38, R.mipmap.emo39};
         db = new SqliteHelper(this);
+        manager.open();
+        List<InfoStyle> infoStyleList = db.getAllStyle();
         animation = AnimationUtils.loadAnimation(getApplicationContext(),
                 R.anim.bounce);
-        currentColor = ContextCompat.getColor(this, R.color.colorAccent);
+        currentColor = ContextCompat.getColor(this, R.color.black);
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -194,18 +199,46 @@ public class EditNameActivity extends BaseActivity implements View.OnClickListen
         });
         if (getIntent() != null) {
             contact = (Contact) getIntent().getSerializableExtra("Contact");
-            edtName.setText(contact.getName());
+//            edtName.setText(contact.getName());
             tvName.setText(contact.getName());
             try {
+//                contact.getId(), edtName.getText().toString(), formatNumber(contact.getPhoneNumber()),
+//                        fontStyle, imagePath, currentColor, size, animation1, listIconString
                 infoStyle = (InfoStyle) getIntent().getSerializableExtra("Style");
                 tvName.setText(infoStyle.getName());
-                Typeface typeface = Typeface.createFromAsset(getAssets(), "fonts/" + infoStyle.getFont());
-                tvName.setTypeface(typeface);
+                edtName.setText(infoStyle.getName());
+                if (infoStyle.getFont() != null) {
+                    Typeface font = Typeface.createFromAsset(getAssets(), "fonts/" + infoStyle.getFont());
+                    tvName.setTypeface(font);
+                    fontStyle = infoStyle.getFont();
+//                    tvPhoneNumber.setTypeface(font);
+                }
+                if (infoStyle.getUrlImage() != null) {
+                    imagePath = infoStyle.getUrlImage();
+                    Glide.with(EditNameActivity.this).load(infoStyle.getUrlImage()).into(imgEffect);
+                }
                 tvName.setTextSize(infoStyle.getSize());
                 tvName.setTextColor(infoStyle.getColor());
                 sbTextSize.setProgress(infoStyle.getSize());
                 edtName.setText(infoStyle.getName());
+                if (infoStyle.getAnimation() != 0) {
+                    Animation animation = AnimationUtils.loadAnimation(EditNameActivity.this, infoStyle.getAnimation());
+                    tvName.startAnimation(animation);
+                    animation1 = infoStyle.getAnimation();
+                }
+                if (infoStyle.getListIcon() != null) {
+                    listImage = gson.fromJson(infoStyle.getListIcon(), int[].class);
+                    dropView.setDrawables(listImage);
+                    dropView.startAnimation();
+                    listIconString = infoStyle.getListIcon();
+                }
+
+//                imagePath = infoStyleList.get
             } catch (Exception e) {
+                size = 24;
+                edtName.setText(contact.getName());
+                tvName.setTextSize(24);
+                sbTextSize.setProgress(24);
                 Log.e("iniUI: ", "iniUI: " + e.getMessage());
             }
         }
@@ -415,8 +448,9 @@ public class EditNameActivity extends BaseActivity implements View.OnClickListen
 
     private void saveAndUpdateStyle(InfoStyle info) {
         try {
-            db.getStyleById(info.getPhone());
+            db.getStyleById(String.valueOf(contact.getId()));
             db.updateStyle(info);
+            Log.d("saveAndUpdateStyle: ", "saveAndUpdateStyle: " + db.updateStyle(info));
             Toast.makeText(this, "Update", Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             db.addStyle(info);
@@ -486,4 +520,7 @@ public class EditNameActivity extends BaseActivity implements View.OnClickListen
         }
         return check;
     }
+
 }
+
+

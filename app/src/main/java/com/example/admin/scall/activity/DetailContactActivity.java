@@ -1,7 +1,6 @@
 package com.example.admin.scall.activity;
 
-import android.app.Activity;
-import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -9,9 +8,9 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.MediaStore;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.telephony.TelephonyManager;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -20,12 +19,12 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.internal.telephony.ITelephony;
 import com.bumptech.glide.Glide;
 import com.example.admin.scall.R;
 import com.example.admin.scall.model.Contact;
 import com.example.admin.scall.model.InfoStyle;
 import com.example.admin.scall.utils.SqliteHelper;
-import com.example.admin.scall.utils.Utils;
 import com.google.gson.Gson;
 import com.hanks.htextview.rainbow.RainbowTextView;
 import com.waynell.library.DropAnimationView;
@@ -33,6 +32,7 @@ import com.waynell.library.DropAnimationView;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Method;
 import java.util.Date;
 
 public class DetailContactActivity extends AppCompatActivity implements View.OnClickListener {
@@ -50,6 +50,7 @@ public class DetailContactActivity extends AppCompatActivity implements View.OnC
     private int[] listImage = new int[6];
     private DropAnimationView dropView;
     private Gson gson;
+    private ImageView imgAcceptCall;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,10 +69,12 @@ public class DetailContactActivity extends AppCompatActivity implements View.OnC
         tvPhoneNumber = findViewById(R.id.tv_phone_number);
         tvPreview = findViewById(R.id.tv_preview);
         imgEffect = findViewById(R.id.img_effect);
-        imgEndCall = findViewById(R.id.img_end_call);
+        imgEndCall = findViewById(R.id.img_reject_call);
+        imgAcceptCall = findViewById(R.id.img_accept_call);
         dropView = findViewById(R.id.drop_animation_view);
         imgEndCall.setOnClickListener(this);
         imgEffect.setOnClickListener(this);
+        imgAcceptCall.setOnClickListener(this);
         if (getIntent() != null) {
             String a = getIntent().getStringExtra("Main");
             if (a != null) {
@@ -144,9 +147,27 @@ public class DetailContactActivity extends AppCompatActivity implements View.OnC
                 break;
             case R.id.img_effect:
                 break;
-            case R.id.img_end_call:
-                Utils.shareApp(this);
+            case R.id.img_reject_call:
+                TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+                try {
+                    Class c = Class.forName(tm.getClass().getName());
+                    Method m = c.getDeclaredMethod("getITelephony");
+                    m.setAccessible(true);
+                    ITelephony telephonyService = (ITelephony) m.invoke(tm);
+                    telephonyService.silenceRinger();
+                    telephonyService.endCall();
+
+                } catch (Exception e) {
+                    Log.d("getITelephony", "onClick: " + e.getMessage());
+                    e.printStackTrace();
+                }
+                finish();
+//                Utils.shareApp(this);
 //                takeScreenshot();
+                break;
+            case R.id.img_accept_call:
+                acceptCall();
+                finish();
                 break;
         }
     }
@@ -251,4 +272,21 @@ public class DetailContactActivity extends AppCompatActivity implements View.OnC
 //        startActivity(intent);
     }
 
+    private void acceptCall() {
+        TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+        try {
+            Class c = Class.forName(tm.getClass().getName());
+            Method m = c.getDeclaredMethod("getITelephony");
+            m.setAccessible(true);
+            ITelephony telephonyService = (ITelephony) m.invoke(tm);
+//            telephonyService.silenceRinger();
+            telephonyService.answerRingingCall();
+
+        } catch (Exception e) {
+            Log.d("getITelephony", "onClick: " + e.getMessage());
+            e.printStackTrace();
+        }
+        finish();
+
+    }
 }

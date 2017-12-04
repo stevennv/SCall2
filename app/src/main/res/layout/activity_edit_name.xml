@@ -15,6 +15,11 @@
         android:gravity="center">
 
 
+        <ImageView
+            android:id="@+id/img_effect"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
         <com.waynell.library.DropAnimationView
             android:id="@+id/drop_animation_view"
             android:layout_width="match_parent"
@@ -26,11 +31,6 @@
             app:rotationAnimate="true"
             app:xAnimate="true"
             app:yAnimate="true" />
-
-        <ImageView
-            android:id="@+id/img_effect"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
 
         <TextView
             android:id="@+id/tv_name"
@@ -89,6 +89,15 @@
                         android:textColor="@color/black"
                         android:textSize="@dimen/text_size_16" />
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toLeftOf="@+id/check_full"
+                        android:padding="@dimen/padding_10"
+                        android:text="@string/full_screen"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/text_size_16" />
+
                     <CheckBox
                         android:id="@+id/check_full"
                         android:layout_width="wrap_content"
@@ -135,7 +144,7 @@
                         android:layout_height="30dp"
                         android:layout_alignParentRight="true"
                         android:layout_marginRight="@dimen/padding_20"
-                        android:background="@color/colorAccent" />
+                        android:background="@color/black" />
                 </RelativeLayout>
 
                 <View
