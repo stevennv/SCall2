@@ -24,7 +24,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
-        <activity android:name=".activity.MainActivity">
+        <activity android:name=".activity.OnBoardingActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -54,7 +54,7 @@
         </receiver>
 
         <activity android:name=".activity.Main2Activity" />
-        <activity android:name=".activity.OnBoardingActivity"></activity>
+        <activity android:name=".activity.MainActivity"></activity>
     </application>
 
 </manifest>

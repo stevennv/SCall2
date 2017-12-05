@@ -2,27 +2,30 @@ package com.example.admin.scall.activity;
 
 import android.Manifest;
 import android.content.ContentResolver;
-import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.drawable.ColorDrawable;
+import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.telephony.TelephonyManager;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Window;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.admin.scall.R;
 import com.example.admin.scall.adapter.ContactAdapter;
+import com.example.admin.scall.dialog.ConfirmQuitDialog;
 import com.example.admin.scall.model.Contact;
 import com.example.admin.scall.model.InfoStyle;
 import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 
@@ -30,6 +33,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends BaseActivity {
+    private Toolbar toolbar;
+    private TextView tvTitleToolbar;
     private RecyclerView rvContact;
     private RecyclerView.LayoutManager layoutManager;
     private ContactAdapter adapter;
@@ -38,6 +43,7 @@ public class MainActivity extends BaseActivity {
     public static final int REQUEST_ID_MULTIPLE_PERMISSIONS = 1;
     private static final int RECORD_REQUEST_CODE = 101;
     private AdView adView;
+    private ConfirmQuitDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +58,10 @@ public class MainActivity extends BaseActivity {
     }
 
     private void iniUI() {
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        tvTitleToolbar = findViewById(R.id.tv_title_toolbar);
+        tvTitleToolbar.setText(getString(R.string.app_name));
         rvContact = (RecyclerView) findViewById(R.id.rv_contact);
         layoutManager = new LinearLayoutManager(this);
         rvContact.setLayoutManager(layoutManager);
@@ -117,5 +127,45 @@ public class MainActivity extends BaseActivity {
                 }
             }
         }
+    }
+
+
+    @Override
+    public void onBackPressed() {
+
+//        Toast.makeText(getApplicationContext(), "hehehehe " + count, Toast.LENGTH_SHORT).show();
+//        count++;
+        dialog = new ConfirmQuitDialog(this, getString(R.string.confirm_quit), getString(R.string.ok),
+                getString(R.string.cancel), new ConfirmQuitDialog.clickBtn1() {
+            @Override
+            public void click() {
+                int pid = android.os.Process.myPid();
+                android.os.Process.killProcess(pid);
+            }
+        }, new ConfirmQuitDialog.clickBtn2() {
+            @Override
+            public void click() {
+                dialog.dismiss();
+            }
+        });
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        dialog.setCancelable(true);
+        dialog.show();
+       /* AlertDialog dialog = new AlertDialog.Builder(this)
+                .setMessage("ádasdasd")
+                .setNegativeButton("ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                    }
+                })
+                .setPositiveButton("cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                    }
+                }).show();*/
+//        super.onBackPressed();
     }
 }

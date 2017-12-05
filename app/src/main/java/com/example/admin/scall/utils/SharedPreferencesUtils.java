@@ -46,4 +46,14 @@ public class SharedPreferencesUtils {
         return infoStyle;
     }
 
+    public void saveFirstOpenApp(boolean value) {
+        editor.putBoolean("FirstOpenApp", value);
+        editor.commit();
+    }
+
+    public boolean isFirstOpenApp() {
+        boolean value = preferences.getBoolean("FirstOpenApp", true);
+        return value;
+    }
+
 }

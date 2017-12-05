@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -19,6 +20,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -37,6 +39,7 @@ import com.example.admin.scall.adapter.EffectAdapter;
 import com.example.admin.scall.adapter.FontAdapter;
 import com.example.admin.scall.adapter.IconAdapter;
 import com.example.admin.scall.adapter.SelectedAdapter;
+import com.example.admin.scall.dialog.ConfirmQuitDialog;
 import com.example.admin.scall.model.Contact;
 import com.example.admin.scall.model.InfoStyle;
 import com.example.admin.scall.utils.DBManager;
@@ -135,7 +138,7 @@ public class EditNameActivity extends BaseActivity implements View.OnClickListen
                 R.mipmap.emo24, R.mipmap.emo25, R.mipmap.emo26, R.mipmap.emo27, R.mipmap.emo28, R.mipmap.emo29, R.mipmap.emo30, R.mipmap.emo31, R.mipmap.emo32,
                 R.mipmap.emo33, R.mipmap.emo34, R.mipmap.emo35, R.mipmap.emo36, R.mipmap.emo37, R.mipmap.emo38, R.mipmap.emo39};
         db = new SqliteHelper(this);
-        manager.open();
+//        manager.open();
         List<InfoStyle> infoStyleList = db.getAllStyle();
         animation = AnimationUtils.loadAnimation(getApplicationContext(),
                 R.anim.bounce);
@@ -382,37 +385,29 @@ public class EditNameActivity extends BaseActivity implements View.OnClickListen
                             fontStyle, imagePath, currentColor, size, animation1, listIconString);
                     saveAndUpdateStyle(infoStyle);
                 }
-
-                AlertDialog dialog1 = new AlertDialog.Builder(this)
-                        .setMessage(getString(R.string.save_success))
-                        .setNegativeButton("ok", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                dialogInterface.dismiss();
-                                finish();
-                            }
-                        }).show();
                 break;
             case R.id.tv_change_background:
-                AlertDialog dialog2 = new AlertDialog.Builder(this)
-                        .setMessage("Choose photo from")
-                        .setNegativeButton("Camera", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                                startActivityForResult(cameraIntent, IMAGE_CAMERA);
-                            }
-                        })
-                        .setPositiveButton("Gallery", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                Intent intent = new Intent(EditNameActivity.this, ImagePickerActivity.class);
-                                intent.putExtra(ImagePickerActivity.EXTRA_TYPE_PICKER,
-                                        ImagePickerActivity.GALLERY_PICKER);
-                                intent.putExtra(ImagePickerActivity.MODE, ImagePickerActivity.Mode.CROP);
-                                startActivityForResult(intent, IMAGE_GALLERY);
-                            }
-                        }).show();
+                ConfirmQuitDialog dialog3 = new ConfirmQuitDialog(this, getString(R.string.choose_picture), getString(R.string.gallery),
+                        getString(R.string.camera), new ConfirmQuitDialog.clickBtn1() {
+                    @Override
+                    public void click() {
+                        Intent intent = new Intent(EditNameActivity.this, ImagePickerActivity.class);
+                        intent.putExtra(ImagePickerActivity.EXTRA_TYPE_PICKER,
+                                ImagePickerActivity.GALLERY_PICKER);
+                        intent.putExtra(ImagePickerActivity.MODE, ImagePickerActivity.Mode.CROP);
+                        startActivityForResult(intent, IMAGE_GALLERY);
+                    }
+                }, new ConfirmQuitDialog.clickBtn2() {
+                    @Override
+                    public void click() {
+                        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                        startActivityForResult(cameraIntent, IMAGE_CAMERA);
+                    }
+                });
+                dialog3.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                dialog3.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                dialog3.setCancelable(true);
+                dialog3.show();
                 break;
             case R.id.tv_another_effect:
                 if (isAnother) {
