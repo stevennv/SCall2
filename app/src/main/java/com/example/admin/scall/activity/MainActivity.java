@@ -15,8 +15,14 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.View;
 import android.view.Window;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,8 +37,11 @@ import com.google.android.gms.ads.MobileAds;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements View.OnClickListener {
+    private EditText edtSearch;
+    private ImageView imgSearch;
     private Toolbar toolbar;
     private TextView tvTitleToolbar;
     private RecyclerView rvContact;
@@ -62,12 +71,32 @@ public class MainActivity extends BaseActivity {
         setSupportActionBar(toolbar);
         tvTitleToolbar = findViewById(R.id.tv_title_toolbar);
         tvTitleToolbar.setText(getString(R.string.app_name));
+        edtSearch = findViewById(R.id.edt_search);
+        imgSearch = findViewById(R.id.img_search);
         rvContact = (RecyclerView) findViewById(R.id.rv_contact);
         layoutManager = new LinearLayoutManager(this);
         rvContact.setLayoutManager(layoutManager);
+        imgSearch.setOnClickListener(this);
         adView = (AdView) findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         adView.loadAd(adRequest);
+        edtSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                String text = edtSearch.getText().toString().toLowerCase(Locale.getDefault());
+                adapter.filter(text);
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
 //        TelephonyManager tMgr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
 //        String mPhoneNumber = tMgr.getLine1Number();
 //        Log.d("iniUI:", "iniUI: " + mPhoneNumber);
@@ -167,5 +196,10 @@ public class MainActivity extends BaseActivity {
                     }
                 }).show();*/
 //        super.onBackPressed();
+    }
+
+    @Override
+    public void onClick(View view) {
+
     }
 }

@@ -35,7 +35,7 @@ import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.util.Date;
 
-public class DetailContactActivity extends AppCompatActivity implements View.OnClickListener {
+public class DetailContactActivity extends BaseActivity implements View.OnClickListener {
     private Contact contact;
     public RainbowTextView tvPreview;
     private TextView tvName;
@@ -43,7 +43,7 @@ public class DetailContactActivity extends AppCompatActivity implements View.OnC
     private ImageView imgEffect;
     public static final int IMAGE_GALLERY = 1;
     public static final int IMAGE_CAMERA = 2;
-    private SqliteHelper db;
+//    private SqliteHelper db;
     private InfoStyle infoStyle;
     private ImageView imgEndCall;
     private boolean isCalling;
@@ -63,8 +63,9 @@ public class DetailContactActivity extends AppCompatActivity implements View.OnC
     }
 
     private void iniUI() {
+
         gson = new Gson();
-        db = new SqliteHelper(this);
+//        db = new SqliteHelper(this);
         tvName = findViewById(R.id.tv_name);
         tvPhoneNumber = findViewById(R.id.tv_phone_number);
         tvPreview = findViewById(R.id.tv_preview);

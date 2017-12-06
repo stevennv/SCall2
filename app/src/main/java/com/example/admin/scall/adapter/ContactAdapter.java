@@ -18,7 +18,9 @@ import com.example.admin.scall.model.InfoStyle;
 import com.example.admin.scall.utils.SqliteHelper;
 import com.example.admin.scall.utils.Utils;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by Admin on 11/21/2017.
@@ -28,10 +30,13 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private Context context;
     private List<Contact> list;
     private SqliteHelper db;
+    private ArrayList<Contact> arraylist;
 
     public ContactAdapter(Context context, List<Contact> list) {
         this.context = context;
         this.list = list;
+        this.arraylist = new ArrayList<Contact>();
+        this.arraylist.addAll(list);
     }
 
 
@@ -82,5 +87,24 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             llItem = itemView.findViewById(R.id.ll_item);
             tvName = itemView.findViewById(R.id.tv_name);
         }
+    }
+
+    public void filter(String charText) {
+        charText = charText.toLowerCase(Locale.getDefault());
+        list.clear();
+        if (charText.length() == 0) {
+            list.addAll(arraylist);
+        } else {
+            for (Contact wp : arraylist) {
+                String[] listSearch = wp.getName().split(" ");
+                for (int i = 0; i < listSearch.length; i++) {
+                    if (listSearch[i].toLowerCase(Locale.getDefault()).contains(charText)) {
+                        list.add(wp);
+                        break;
+                    }
+                }
+            }
+        }
+        notifyDataSetChanged();
     }
 }

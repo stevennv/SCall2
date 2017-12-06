@@ -92,7 +92,7 @@ public class EditNameActivity extends BaseActivity implements View.OnClickListen
     private RecyclerView rvEffect;
     private int[] listEffect = {0, R.anim.bounce, R.anim.rotate, R.anim.custom_anim1, R.anim.pump_top, R.anim.fade_in, R.anim.grow_from_bottom};
     private EffectAdapter effectAdapter;
-    private SqliteHelper db;
+//    private SqliteHelper db;
     private List<InfoStyle> list1 = new ArrayList<>();
     private InfoStyle infoStyle;
     private String imagePath;
@@ -137,7 +137,7 @@ public class EditNameActivity extends BaseActivity implements View.OnClickListen
                 R.mipmap.emo16, R.mipmap.emo17, R.mipmap.emo18, R.mipmap.emo19, R.mipmap.emo20, R.mipmap.emo21, R.mipmap.emo22, R.mipmap.emo23,
                 R.mipmap.emo24, R.mipmap.emo25, R.mipmap.emo26, R.mipmap.emo27, R.mipmap.emo28, R.mipmap.emo29, R.mipmap.emo30, R.mipmap.emo31, R.mipmap.emo32,
                 R.mipmap.emo33, R.mipmap.emo34, R.mipmap.emo35, R.mipmap.emo36, R.mipmap.emo37, R.mipmap.emo38, R.mipmap.emo39};
-        db = new SqliteHelper(this);
+//        db = new SqliteHelper(this);
 //        manager.open();
         List<InfoStyle> infoStyleList = db.getAllStyle();
         animation = AnimationUtils.loadAnimation(getApplicationContext(),

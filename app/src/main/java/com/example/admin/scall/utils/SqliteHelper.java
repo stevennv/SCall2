@@ -19,8 +19,10 @@ import java.util.List;
 public class SqliteHelper extends SQLiteOpenHelper {
     public SqliteHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+//        openDb();
     }
 
+    private SQLiteDatabase db;
     private static final int DATABASE_VERSION = 1;
 
     // Database Name
@@ -28,7 +30,7 @@ public class SqliteHelper extends SQLiteOpenHelper {
 
     // Contacts table name
     private static final String TABLE_STYLE = "style";
-
+    private String DB_PATH = "data/data/com.example.admin.scall/databases/";
     // Contacts Table Columns names
     private static final String KEY_ID = "id";
     private static final String KEY_NAME = "name";
@@ -54,6 +56,12 @@ public class SqliteHelper extends SQLiteOpenHelper {
 
         // Create tables again
         onCreate(sqLiteDatabase);
+    }
+
+    private void openDb() {
+//        String myPath = DB_PATH + TABLE_STYLE;
+//        db = SQLiteDatabase.openDatabase(myPath, null,
+//                SQLiteDatabase.OPEN_READWRITE);
     }
 
     public void addStyle(InfoStyle style) {
