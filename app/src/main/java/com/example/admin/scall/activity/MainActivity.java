@@ -5,6 +5,7 @@ import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -35,6 +36,7 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -67,6 +69,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
     private void iniUI() {
+        Log.d("iniUI:", "iniUI: "+ db.getStyleByPhone("+841664388560"));
+        List<InfoStyle> list = db.getAllStyle();
+//        for (int i = 0; i < list.size(); i++) {
+//            Log.d("iniUI:F", "iniUI: " + list.get(i).getName() + "   " + list.get(i).getPhone() + "   " + list.get(i).getId());
+//        }
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         tvTitleToolbar = findViewById(R.id.tv_title_toolbar);

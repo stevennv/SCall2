@@ -92,7 +92,7 @@ public class EditNameActivity extends BaseActivity implements View.OnClickListen
     private RecyclerView rvEffect;
     private int[] listEffect = {0, R.anim.bounce, R.anim.rotate, R.anim.custom_anim1, R.anim.pump_top, R.anim.fade_in, R.anim.grow_from_bottom};
     private EffectAdapter effectAdapter;
-//    private SqliteHelper db;
+    //    private SqliteHelper db;
     private List<InfoStyle> list1 = new ArrayList<>();
     private InfoStyle infoStyle;
     private String imagePath;
@@ -457,7 +457,8 @@ public class EditNameActivity extends BaseActivity implements View.OnClickListen
         String result1 = number.replace("-", "");
         String result2 = result1.replace("(", "");
         String result3 = result2.replace(")", "");
-        String result = result3.replace(" ", "");
+        String result4 = result3.replace("+84", "0");
+        String result = result4.replace(" ", "");
         return result;
     }
 
