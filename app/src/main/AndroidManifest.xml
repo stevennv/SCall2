@@ -35,9 +35,6 @@
             android:name=".activity.DetailContactActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.EditFontActivity"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".activity.EditNameActivity"
             android:screenOrientation="portrait" />
         <activity

@@ -113,6 +113,7 @@ public class EditNameActivity extends BaseActivity implements View.OnClickListen
     private InfoStyle infoStyle2;
     private int[] listImage;
     private DBManager manager;
+    private String name;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -201,13 +202,14 @@ public class EditNameActivity extends BaseActivity implements View.OnClickListen
             }
         });
         if (getIntent() != null) {
-            contact = (Contact) getIntent().getSerializableExtra("Contact");
+
 //            edtName.setText(contact.getName());
-            tvName.setText(contact.getName());
+
             try {
 //                contact.getId(), edtName.getText().toString(), formatNumber(contact.getPhoneNumber()),
 //                        fontStyle, imagePath, currentColor, size, animation1, listIconString
                 infoStyle = (InfoStyle) getIntent().getSerializableExtra("Style");
+                name = infoStyle.getName();
                 tvName.setText(infoStyle.getName());
                 edtName.setText(infoStyle.getName());
                 if (infoStyle.getFont() != null) {
@@ -238,6 +240,10 @@ public class EditNameActivity extends BaseActivity implements View.OnClickListen
 
 //                imagePath = infoStyleList.get
             } catch (Exception e) {
+
+                contact = (Contact) getIntent().getSerializableExtra("Contact");
+                name = contact.getName();
+                tvName.setText(contact.getName());
                 size = 24;
                 edtName.setText(contact.getName());
                 tvName.setTextSize(24);
@@ -259,7 +265,7 @@ public class EditNameActivity extends BaseActivity implements View.OnClickListen
                 Log.d("click:", "click: " + value);
                 tvName.setTypeface(font);
             }
-        }, contact.getName());
+        }, name);
         effectAdapter = new EffectAdapter(this, listEffect, new EffectAdapter.clickItem() {
             @Override
             public void click(int value, int pos) {

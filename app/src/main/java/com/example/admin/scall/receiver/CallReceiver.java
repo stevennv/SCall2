@@ -115,17 +115,7 @@ public class CallReceiver extends BroadcastReceiver {
                 state = TelephonyManager.CALL_STATE_RINGING;
             }
 
-            CountDownTimer countDownTimer = new CountDownTimer(1000, 200) {
-                @Override
-                public void onTick(long l) {
-
-                }
-
-                @Override
-                public void onFinish() {
-                    onCallStateChanged(context, state, number);
-                }
-            }.start();
+            onCallStateChanged(context, state, number);
         }
     }
 }
