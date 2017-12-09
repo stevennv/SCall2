@@ -18,7 +18,8 @@ public class Utils {
         String result1 = number.replace("-", "");
         String result2 = result1.replace("(", "");
         String result3 = result2.replace(")", "");
-        String result = result3.replace(" ", "");
+        String result4 = result3.replace("+84", "");
+        String result = result4.replace(" ", "");
 
         return result;
     }

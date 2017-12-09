@@ -55,6 +55,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -114,6 +115,9 @@ public class EditNameActivity extends BaseActivity implements View.OnClickListen
     private int[] listImage;
     private DBManager manager;
     private String name;
+    private int id;
+    private String phone;
+    private List<Integer> list123 = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,20 +131,20 @@ public class EditNameActivity extends BaseActivity implements View.OnClickListen
 
     protected void iniUI() {
         gson = new Gson();
-        listIcon = new int[]{R.mipmap.ic_love, R.mipmap.agnes_happy, R.mipmap.agnes_overjoyed, R.mipmap.agnes_sad, R.mipmap.edith,
-                R.mipmap.gru, R.mipmap.gru2, R.mipmap.margo, R.mipmap.minion_amazed, R.mipmap.minion_angry, R.mipmap.minion_bananas,
-                R.mipmap.minion_big, R.mipmap.minion_curious, R.mipmap.minion_dancing, R.mipmap.minion_duck, R.mipmap.minion_evil,
-                R.mipmap.minion_evil2, R.mipmap.minion_evil_run, R.mipmap.minion_fruit, R.mipmap.minion_girl, R.mipmap.minion_golf,
-                R.mipmap.minion_happy, R.mipmap.minion_jumping, R.mipmap.minion_kungfu, R.mipmap.minion_maid, R.mipmap.minion_please, R.mipmap.minion_sad,
-                R.mipmap.minion_shout, R.mipmap.minion_tongue, R.mipmap.minion_wave, R.mipmap.minion_write,
+        listIcon = new int[]{R.mipmap.ic_love, R.mipmap.apple_1_15, R.mipmap.apple_42, R.mipmap.bananas_48, R.mipmap.bananas_50,
+                R.mipmap.cherry_2, R.mipmap.cherry_25, R.mipmap.coffee_cup_1_5, R.mipmap.coffee_cup_41, R.mipmap.cookie_1_6, R.mipmap.cookie_36,
+                R.mipmap.corn_28, R.mipmap.cupcake_30, R.mipmap.cupcake_47, R.mipmap.donut_37, R.mipmap.donut_49,
+                R.mipmap.eggplant_26, R.mipmap.french_fries_19, R.mipmap.french_fries_40, R.mipmap.fried_egg_23, R.mipmap.grapes_31,
+                R.mipmap.hamburger_20, R.mipmap.hamburger_43, R.mipmap.hot_dog_8, R.mipmap.ice_cream_24, R.mipmap.ice_cream_38, R.mipmap.ketchup_11,
+                R.mipmap.meatball_17, R.mipmap.milk_32, R.mipmap.milkshake_18, R.mipmap.mushroom_7, R.mipmap.onigiri_4, R.mipmap.onigiri_35,
+                R.mipmap.orange_33, R.mipmap.pea_14, R.mipmap.peach_22, R.mipmap.peach_3, R.mipmap.pear_12, R.mipmap.piece_of_cake_1_9, R.mipmap.piece_of_cake_34,
+                R.mipmap.pineapple_1_13, R.mipmap.pineapple_39, R.mipmap.pizza_29, R.mipmap.pizza_45, R.mipmap.popsicle_16, R.mipmap.pudding_1, R.mipmap.pudding_21,
+                R.mipmap.strawberry_27, R.mipmap.strawberry_44, R.mipmap.taco_10, R.mipmap.taco_46,
                 R.mipmap.emo1, R.mipmap.emo2, R.mipmap.emo3, R.mipmap.emo4, R.mipmap.emo5, R.mipmap.emo6, R.mipmap.emo7,
                 R.mipmap.emo8, R.mipmap.emo9, R.mipmap.emo10, R.mipmap.emo11, R.mipmap.emo12, R.mipmap.emo13, R.mipmap.emo14, R.mipmap.emo15,
                 R.mipmap.emo16, R.mipmap.emo17, R.mipmap.emo18, R.mipmap.emo19, R.mipmap.emo20, R.mipmap.emo21, R.mipmap.emo22, R.mipmap.emo23,
                 R.mipmap.emo24, R.mipmap.emo25, R.mipmap.emo26, R.mipmap.emo27, R.mipmap.emo28, R.mipmap.emo29, R.mipmap.emo30, R.mipmap.emo31, R.mipmap.emo32,
                 R.mipmap.emo33, R.mipmap.emo34, R.mipmap.emo35, R.mipmap.emo36, R.mipmap.emo37, R.mipmap.emo38, R.mipmap.emo39};
-//        db = new SqliteHelper(this);
-//        manager.open();
-        List<InfoStyle> infoStyleList = db.getAllStyle();
         animation = AnimationUtils.loadAnimation(getApplicationContext(),
                 R.anim.bounce);
         currentColor = ContextCompat.getColor(this, R.color.black);
@@ -202,13 +206,10 @@ public class EditNameActivity extends BaseActivity implements View.OnClickListen
             }
         });
         if (getIntent() != null) {
-
-//            edtName.setText(contact.getName());
-
             try {
-//                contact.getId(), edtName.getText().toString(), formatNumber(contact.getPhoneNumber()),
-//                        fontStyle, imagePath, currentColor, size, animation1, listIconString
                 infoStyle = (InfoStyle) getIntent().getSerializableExtra("Style");
+                id = infoStyle.getId();
+                phone = infoStyle.getPhone();
                 name = infoStyle.getName();
                 tvName.setText(infoStyle.getName());
                 edtName.setText(infoStyle.getName());
@@ -216,7 +217,6 @@ public class EditNameActivity extends BaseActivity implements View.OnClickListen
                     Typeface font = Typeface.createFromAsset(getAssets(), "fonts/" + infoStyle.getFont());
                     tvName.setTypeface(font);
                     fontStyle = infoStyle.getFont();
-//                    tvPhoneNumber.setTypeface(font);
                 }
                 if (infoStyle.getUrlImage() != null) {
                     imagePath = infoStyle.getUrlImage();
@@ -243,6 +243,8 @@ public class EditNameActivity extends BaseActivity implements View.OnClickListen
 
                 contact = (Contact) getIntent().getSerializableExtra("Contact");
                 name = contact.getName();
+                id = contact.getId();
+                phone = contact.getPhoneNumber();
                 tvName.setText(contact.getName());
                 size = 24;
                 edtName.setText(contact.getName());
@@ -382,12 +384,12 @@ public class EditNameActivity extends BaseActivity implements View.OnClickListen
                 if (isAnother) {
                     if (!checkIcon(listSelected)) {
                         listIconString = gson.toJson(listSelected);
-                        InfoStyle infoStyle = new InfoStyle(contact.getId(), edtName.getText().toString(), formatNumber(contact.getPhoneNumber()),
+                        InfoStyle infoStyle = new InfoStyle(id, edtName.getText().toString(), formatNumber(phone),
                                 fontStyle, imagePath, currentColor, size, animation1, listIconString);
                         saveAndUpdateStyle(infoStyle);
                     }
                 } else {
-                    InfoStyle infoStyle = new InfoStyle(contact.getId(), edtName.getText().toString(), formatNumber(contact.getPhoneNumber()),
+                    InfoStyle infoStyle = new InfoStyle(id, edtName.getText().toString(), formatNumber(phone),
                             fontStyle, imagePath, currentColor, size, animation1, listIconString);
                     saveAndUpdateStyle(infoStyle);
                 }
@@ -429,13 +431,13 @@ public class EditNameActivity extends BaseActivity implements View.OnClickListen
                 if (isAnother) {
                     if (!checkIcon(listSelected)) {
                         listIconString = gson.toJson(listSelected);
-                        infoStyle2 = new InfoStyle(contact.getId(), edtName.getText().toString(), contact.getPhoneNumber(), fontStyle,
+                        infoStyle2 = new InfoStyle(id, edtName.getText().toString(), phone, fontStyle,
                                 imagePath, currentColor, size, animation1, listIconString);
                     } else {
                         Toast.makeText(this, "Failure", Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    infoStyle2 = new InfoStyle(contact.getId(), edtName.getText().toString(), contact.getPhoneNumber(), fontStyle,
+                    infoStyle2 = new InfoStyle(id, edtName.getText().toString(), phone, fontStyle,
                             imagePath, currentColor, size, animation1, listIconString);
                 }
                 Intent i = new Intent(this, DetailContactActivity.class);
