@@ -3,6 +3,7 @@ package com.example.admin.scall.activity;
 import android.Manifest;
 import android.content.ContentResolver;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -40,6 +41,7 @@ import com.example.admin.scall.fragment.ListContactFragment;
 import com.example.admin.scall.fragment.ListCustomFragment;
 import com.example.admin.scall.model.Contact;
 import com.example.admin.scall.model.InfoStyle;
+import com.example.admin.scall.service.CallService;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
@@ -73,9 +75,14 @@ public class MainActivity extends BaseActivity {
                         Manifest.permission.WRITE_EXTERNAL_STORAGE},
                 RECORD_REQUEST_CODE);
         iniUI();
+//        startService();
     }
 
     private void iniUI() {
+        list1 = db.getAllStyle();
+        for (int i = 0 ; i< list1.size(); i++){
+            Log.d("iniUI:", "iniUI: "+ list1.get(i).getPhone() + "  "+ list1.get(i).getId());
+        }
         gson = new Gson();
 //        toolbar = findViewById(R.id.toolbar);
 //        setSupportActionBar(toolbar);
@@ -222,6 +229,10 @@ public class MainActivity extends BaseActivity {
             return TITLES.length;
         }
     }
-
+    private void startService(){
+//        Intent intentService = new Intent(this, CallService.class);
+//        startService(intentService);
+        startService(new Intent(getBaseContext(),CallService.class));
+    }
 
 }

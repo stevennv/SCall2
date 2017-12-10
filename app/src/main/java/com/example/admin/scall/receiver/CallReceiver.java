@@ -45,6 +45,8 @@ public class CallReceiver extends BroadcastReceiver {
                     Intent intent = new Intent(context, DetailContactActivity.class);
                     InfoStyle infoStyle = db.getStyleByPhone(number);
                     intent.putExtra("Info", infoStyle);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(intent);
                     Toast.makeText(context, "Incoming Call Ringing", Toast.LENGTH_SHORT).show();
                     isStyle = true;
@@ -105,7 +107,7 @@ public class CallReceiver extends BroadcastReceiver {
         } else {
             String stateStr = intent.getExtras().getString(TelephonyManager.EXTRA_STATE);
             final String number = intent.getExtras().getString(TelephonyManager.EXTRA_INCOMING_NUMBER);
-            Log.d("onReceive:", "onReceive: " + number);
+            Log.d("onReceive:", "onReceive123: " + number);
 
             if (stateStr.equals(TelephonyManager.EXTRA_STATE_IDLE)) {
                 state = TelephonyManager.CALL_STATE_IDLE;
@@ -114,8 +116,19 @@ public class CallReceiver extends BroadcastReceiver {
             } else if (stateStr.equals(TelephonyManager.EXTRA_STATE_RINGING)) {
                 state = TelephonyManager.CALL_STATE_RINGING;
             }
+            CountDownTimer couter = new CountDownTimer(250, 250) {
+                @Override
+                public void onTick(long l) {
 
-            onCallStateChanged(context, state, number);
+                }
+
+                @Override
+                public void onFinish() {
+                    onCallStateChanged(context, state, number);
+                }
+            }.start();
+            TelephonyManager telephonyManager;
+
         }
     }
 }

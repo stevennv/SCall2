@@ -33,7 +33,11 @@
         </activity>
         <activity
             android:name=".activity.DetailContactActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait" >
+            <intent-filter>
+                <action android:name="android.intent.action.ANSWER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".activity.EditNameActivity"
             android:screenOrientation="portrait" />
@@ -49,6 +53,7 @@
                 <action android:name="android.intent.action.NEW_OUTGOING_CALL" />
             </intent-filter>
         </receiver>
+        <service android:name=".service.CallService"/>
 
         <activity android:name=".activity.Main2Activity" />
         <activity android:name=".activity.MainActivity"></activity>

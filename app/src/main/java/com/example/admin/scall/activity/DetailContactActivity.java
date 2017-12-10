@@ -6,8 +6,10 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.RemoteException;
 import android.support.v7.app.AppCompatActivity;
 import android.telephony.TelephonyManager;
 import android.util.Log;
@@ -32,6 +34,7 @@ import com.waynell.library.DropAnimationView;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Date;
 
@@ -43,7 +46,7 @@ public class DetailContactActivity extends BaseActivity implements View.OnClickL
     private ImageView imgEffect;
     public static final int IMAGE_GALLERY = 1;
     public static final int IMAGE_CAMERA = 2;
-//    private SqliteHelper db;
+    //    private SqliteHelper db;
     private InfoStyle infoStyle;
     private ImageView imgEndCall;
     private boolean isCalling;
@@ -268,26 +271,10 @@ public class DetailContactActivity extends BaseActivity implements View.OnClickL
                                 }
                             }).create()).show();
         }
-
-//        intent.setDataAndType(url, "image/*");
-//        startActivity(intent);
     }
 
     private void acceptCall() {
-        TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-        try {
-            Class c = Class.forName(tm.getClass().getName());
-            Method m = c.getDeclaredMethod("getITelephony");
-            m.setAccessible(true);
-            ITelephony telephonyService = (ITelephony) m.invoke(tm);
-//            telephonyService.silenceRinger();
-            telephonyService.answerRingingCall();
-
-        } catch (Exception e) {
-            Log.d("getITelephony", "onClick: " + e.getMessage());
-            e.printStackTrace();
-        }
-        finish();
+     
 
     }
 }

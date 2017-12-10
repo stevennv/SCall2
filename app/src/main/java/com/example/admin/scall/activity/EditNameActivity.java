@@ -451,7 +451,7 @@ public class EditNameActivity extends BaseActivity implements View.OnClickListen
 
     private void saveAndUpdateStyle(InfoStyle info) {
         try {
-            db.getStyleById(String.valueOf(contact.getId()));
+            db.getStyleById(String.valueOf(id));
             db.updateStyle(info);
             Log.d("saveAndUpdateStyle: ", "saveAndUpdateStyle: " + db.updateStyle(info));
             Toast.makeText(this, "Update", Toast.LENGTH_SHORT).show();
