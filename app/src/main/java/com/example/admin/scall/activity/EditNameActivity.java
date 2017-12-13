@@ -1,18 +1,17 @@
 package com.example.admin.scall.activity;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
-import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -43,7 +42,6 @@ import com.example.admin.scall.dialog.ConfirmQuitDialog;
 import com.example.admin.scall.model.Contact;
 import com.example.admin.scall.model.InfoStyle;
 import com.example.admin.scall.utils.DBManager;
-import com.example.admin.scall.utils.SqliteHelper;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
@@ -55,7 +53,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -85,6 +82,7 @@ public class EditNameActivity extends BaseActivity implements View.OnClickListen
     private RecyclerView rvListIcon;
     private CheckBox checkBox;
     private CheckBox checkFull;
+    private int isFull = 1;
     //    private InfoStyle infoStyle;
     private String fontStyle;
     private int size;
@@ -103,7 +101,8 @@ public class EditNameActivity extends BaseActivity implements View.OnClickListen
     private int animation1;
     private IconAdapter adapterIcon;
     private SelectedAdapter adapterSelected;
-    private int[] listSelected = new int[6];
+    private int[] arraySelected;
+    private List<Integer> listSelected = new ArrayList<>();
     private int[] listIcon = new int[70];
     private int posSelected;
     private DropAnimationView dropView;
@@ -117,7 +116,6 @@ public class EditNameActivity extends BaseActivity implements View.OnClickListen
     private String name;
     private int id;
     private String phone;
-    private List<Integer> list123 = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,7 +124,6 @@ public class EditNameActivity extends BaseActivity implements View.OnClickListen
         setContentView(R.layout.activity_edit_name);
         MobileAds.initialize(this, getString(R.string.admob_app_id));
         iniUI();
-//        getData();
     }
 
     protected void iniUI() {
@@ -193,8 +190,10 @@ public class EditNameActivity extends BaseActivity implements View.OnClickListen
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if (b) {
+                    isFull = 2;
                     imgEffect.setScaleType(ImageView.ScaleType.FIT_XY);
                 } else {
+                    isFull = 1;
                     imgEffect.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
                 }
             }
@@ -236,6 +235,11 @@ public class EditNameActivity extends BaseActivity implements View.OnClickListen
                     dropView.setDrawables(listImage);
                     dropView.startAnimation();
                     listIconString = infoStyle.getListIcon();
+                }
+                if (infoStyle.getIsFull() == 1) {
+                    imgEffect.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                } else {
+                    imgEffect.setScaleType(ImageView.ScaleType.FIT_XY);
                 }
 
 //                imagePath = infoStyleList.get
@@ -305,25 +309,44 @@ public class EditNameActivity extends BaseActivity implements View.OnClickListen
             @Override
             public void click(int values) {
                 if (isAnother) {
-                    if (posSelected == 6) {
-                        posSelected = 0;
-                    }
-                    listSelected[posSelected] = values;
 
+                    listSelected.add(values);
+//                    arraySelected[posSelected] = values;
+                    arraySelected = new int[listSelected.size()];
+                    for (int i = 0; i < listSelected.size(); i++) {
+                        arraySelected[i] = listSelected.get(i);
+                        Log.d("click:_123", "click: " + arraySelected[i]);
+                    }
 
                     posSelected++;
-                    adapterSelected = new SelectedAdapter(EditNameActivity.this, listSelected, new SelectedAdapter.onClick() {
-                        @Override
-                        public void click(int pos) {
 
-                        }
-                    });
                 }
             }
         });
-        rvListSelected.setAdapter(adapterSelected);
+
+        adapter.notifyDataSetChanged();
+
         adapterIcon.notifyDataSetChanged();
         rvListIcon.setAdapter(adapterIcon);
+        CountDownTimer count = new CountDownTimer(10000, 1000) {
+            @Override
+            public void onTick(long l) {
+
+            }
+
+            @Override
+            public void onFinish() {
+                adapterSelected = new SelectedAdapter(EditNameActivity.this, listSelected, new SelectedAdapter.onClick() {
+                    @Override
+                    public void click(int pos) {
+
+                    }
+                });
+                adapterSelected.notifyDataSetChanged();
+                rvListSelected.setAdapter(adapterSelected);
+            }
+        }.start();
+
         edtName.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -359,6 +382,7 @@ public class EditNameActivity extends BaseActivity implements View.OnClickListen
         });
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -381,16 +405,21 @@ public class EditNameActivity extends BaseActivity implements View.OnClickListen
                 dialog.show();
                 break;
             case R.id.img_menu_toolbar:
+
                 if (isAnother) {
-                    if (!checkIcon(listSelected)) {
-                        listIconString = gson.toJson(listSelected);
-                        InfoStyle infoStyle = new InfoStyle(id, edtName.getText().toString(), formatNumber(phone),
-                                fontStyle, imagePath, currentColor, size, animation1, listIconString);
-                        saveAndUpdateStyle(infoStyle);
+                    arraySelected = new int[listSelected.size()];
+                    for (int i = 0; i < listSelected.size(); i++) {
+                        arraySelected[i] = listSelected.get(i);
                     }
+//                    if (!checkIcon(arraySelected)) {
+                    listIconString = gson.toJson(arraySelected);
+                    InfoStyle infoStyle = new InfoStyle(id, edtName.getText().toString(), formatNumber(phone),
+                            fontStyle, imagePath, currentColor, size, animation1, listIconString, isFull);
+                    saveAndUpdateStyle(infoStyle);
+//                    }
                 } else {
                     InfoStyle infoStyle = new InfoStyle(id, edtName.getText().toString(), formatNumber(phone),
-                            fontStyle, imagePath, currentColor, size, animation1, listIconString);
+                            fontStyle, imagePath, currentColor, size, animation1, listIconString, isFull);
                     saveAndUpdateStyle(infoStyle);
                 }
                 break;
@@ -419,26 +448,27 @@ public class EditNameActivity extends BaseActivity implements View.OnClickListen
                 break;
             case R.id.tv_another_effect:
                 if (isAnother) {
-                    if (!checkIcon(listSelected)) {
-                        dropView.setDrawables(listSelected);
-                        dropView.startAnimation();
-                    } else {
-                        Toast.makeText(this, "Chọn đúng 6 icon", Toast.LENGTH_SHORT).show();
+                    arraySelected = new int[listSelected.size()];
+                    for (int i = 0; i < listSelected.size(); i++) {
+                        arraySelected[i] = listSelected.get(i);
                     }
+                    dropView.setDrawables(arraySelected);
+                    dropView.startAnimation();
+                    dropView.setScrollBarFadeDuration(3000);
                 }
                 break;
             case R.id.tv_preview:
                 if (isAnother) {
-                    if (!checkIcon(listSelected)) {
-                        listIconString = gson.toJson(listSelected);
-                        infoStyle2 = new InfoStyle(id, edtName.getText().toString(), phone, fontStyle,
-                                imagePath, currentColor, size, animation1, listIconString);
-                    } else {
-                        Toast.makeText(this, "Failure", Toast.LENGTH_SHORT).show();
-                    }
+//                    if (!checkIcon(arraySelected)) {
+                    listIconString = gson.toJson(arraySelected);
+                    infoStyle2 = new InfoStyle(id, edtName.getText().toString(), phone, fontStyle,
+                            imagePath, currentColor, size, animation1, listIconString, isFull);
+//                    } else {
+//                        Toast.makeText(this, "Failure", Toast.LENGTH_SHORT).show();
+//                    }
                 } else {
                     infoStyle2 = new InfoStyle(id, edtName.getText().toString(), phone, fontStyle,
-                            imagePath, currentColor, size, animation1, listIconString);
+                            imagePath, currentColor, size, animation1, listIconString, isFull);
                 }
                 Intent i = new Intent(this, DetailContactActivity.class);
                 i.putExtra("Main", "Abc");
@@ -512,18 +542,6 @@ public class EditNameActivity extends BaseActivity implements View.OnClickListen
         return file;
     }
 
-    private boolean checkIcon(int[] array) {
-        boolean check = false;
-        for (int i = 0; i < array.length; i++) {
-            if (array[i] == 0) {
-                check = true;
-                break;
-            } else {
-                check = false;
-            }
-        }
-        return check;
-    }
 
 }
 

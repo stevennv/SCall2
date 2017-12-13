@@ -22,6 +22,7 @@
     <string name="choose_picture">Choose photo from</string>
     <string name="gallery">Gallery</string>
     <string name="camera">Camera</string>
+    <string name="take_screen">Take Screen </string>
     <string name="admob_app_id">ca-app-pub-3940256099942544~3347511713</string>
     <string name="interstitial_ads">ca-app-pub-3940256099942544/1033173712</string>
 </resources>

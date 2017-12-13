@@ -2,13 +2,12 @@ package com.example.admin.scall.activity;
 
 import android.Manifest;
 import android.content.ContentResolver;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.support.annotation.NonNull;
@@ -18,24 +17,14 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
-import android.view.View;
 import android.view.Window;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.astuetz.PagerSlidingTabStrip;
 import com.example.admin.scall.R;
-import com.example.admin.scall.adapter.ContactAdapter;
 import com.example.admin.scall.dialog.ConfirmQuitDialog;
 import com.example.admin.scall.fragment.ListContactFragment;
 import com.example.admin.scall.fragment.ListCustomFragment;
@@ -47,10 +36,11 @@ import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 import com.google.gson.Gson;
 
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 public class MainActivity extends BaseActivity {
     private Toolbar toolbar;
@@ -75,13 +65,14 @@ public class MainActivity extends BaseActivity {
                         Manifest.permission.WRITE_EXTERNAL_STORAGE},
                 RECORD_REQUEST_CODE);
         iniUI();
-//        startService();
+
+        startService();
     }
 
     private void iniUI() {
         list1 = db.getAllStyle();
-        for (int i = 0 ; i< list1.size(); i++){
-            Log.d("iniUI:", "iniUI: "+ list1.get(i).getPhone() + "  "+ list1.get(i).getId());
+        for (int i = 0; i < list1.size(); i++) {
+            Log.d("iniUI:", "iniUI: " + list1.get(i).getPhone() + "  " + list1.get(i).getId());
         }
         gson = new Gson();
 //        toolbar = findViewById(R.id.toolbar);
@@ -110,6 +101,11 @@ public class MainActivity extends BaseActivity {
                 refreshLayout.setRefreshing(false);
             }
         });
+        File rootPath = new File(Environment.getExternalStorageDirectory(), "Scall");
+        if (!rootPath.exists()) {
+            rootPath.mkdirs();
+            Toast.makeText(this, "Create Success", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void getContactList() {
@@ -229,10 +225,11 @@ public class MainActivity extends BaseActivity {
             return TITLES.length;
         }
     }
-    private void startService(){
+
+    private void startService() {
 //        Intent intentService = new Intent(this, CallService.class);
 //        startService(intentService);
-        startService(new Intent(getBaseContext(),CallService.class));
+        startService(new Intent(getBaseContext(), CallService.class));
     }
 
 }

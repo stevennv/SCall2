@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.os.RemoteException;
 import android.support.v7.app.AppCompatActivity;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -20,10 +22,12 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.internal.telephony.ITelephony;
 import com.bumptech.glide.Glide;
 import com.example.admin.scall.R;
+import com.example.admin.scall.activity.customview.CallSliderView;
 import com.example.admin.scall.model.Contact;
 import com.example.admin.scall.model.InfoStyle;
 import com.example.admin.scall.utils.SqliteHelper;
@@ -32,7 +36,9 @@ import com.hanks.htextview.rainbow.RainbowTextView;
 import com.waynell.library.DropAnimationView;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -79,6 +85,7 @@ public class DetailContactActivity extends BaseActivity implements View.OnClickL
         imgEndCall.setOnClickListener(this);
         imgEffect.setOnClickListener(this);
         imgAcceptCall.setOnClickListener(this);
+        tvPreview.setOnClickListener(this);
         if (getIntent() != null) {
             String a = getIntent().getStringExtra("Main");
             if (a != null) {
@@ -97,7 +104,7 @@ public class DetailContactActivity extends BaseActivity implements View.OnClickL
                     tvName.startAnimation(animation);
                 }
                 Glide.with(DetailContactActivity.this).load(infoStyle.getUrlImage()).into(imgEffect);
-                tvPreview.setVisibility(View.GONE);
+//                tvPreview.setVisibility(View.GONE);
                 tvPhoneNumber.setText(infoStyle.getPhone() + "  " + getString(R.string.calling));
                 tvPhoneNumber.setTextSize(24);
                 tvPhoneNumber.setTextColor(infoStyle.getColor());
@@ -105,6 +112,11 @@ public class DetailContactActivity extends BaseActivity implements View.OnClickL
                     listImage = gson.fromJson(infoStyle.getListIcon(), int[].class);
                     dropView.setDrawables(listImage);
                     dropView.startAnimation();
+                }
+                if (infoStyle.getIsFull() == 1) {
+                    imgEffect.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                } else {
+                    imgEffect.setScaleType(ImageView.ScaleType.FIT_XY);
                 }
             } else {
                 isCalling = false;
@@ -130,6 +142,11 @@ public class DetailContactActivity extends BaseActivity implements View.OnClickL
                     listImage = gson.fromJson(infoStyle.getListIcon(), int[].class);
                     dropView.setDrawables(listImage);
                     dropView.startAnimation();
+                }
+                if (infoStyle.getIsFull() == 1) {
+                    imgEffect.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                } else {
+                    imgEffect.setScaleType(ImageView.ScaleType.FIT_XY);
                 }
 //                Uri uri = Uri.parse(infoStyle.getUrlImage());
 //                imgEffect.setImageURI(uri);
@@ -166,12 +183,16 @@ public class DetailContactActivity extends BaseActivity implements View.OnClickL
                     e.printStackTrace();
                 }
                 finish();
-//                Utils.shareApp(this);
-//                takeScreenshot();
                 break;
             case R.id.img_accept_call:
-                acceptCall();
+//                acceptCall();
                 finish();
+                break;
+            case R.id.tv_preview:
+                Bitmap bitmap = takeScreenshot();
+                saveBitmap(bitmap);
+//                tvPreview.setVisibility(View.GONE);
+//                takeScreenshot();
                 break;
         }
     }
@@ -190,6 +211,23 @@ public class DetailContactActivity extends BaseActivity implements View.OnClickL
                     Glide.with(this).load(mImagePath).into(imgEffect);
                 }
             }
+        }
+    }
+
+    public void saveBitmap(Bitmap bitmap) {
+        Date now = new Date();
+        android.text.format.DateFormat.format("yyyy-MM-dd_hh:mm:ss", now);
+        File imagePath = new File(Environment.getExternalStorageDirectory() + "/Scall/" + now + ".png");
+        FileOutputStream fos;
+        try {
+            fos = new FileOutputStream(imagePath);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+            fos.flush();
+            fos.close();
+        } catch (FileNotFoundException e) {
+            Log.e("GREC", e.getMessage(), e);
+        } catch (IOException e) {
+            Log.e("GREC", e.getMessage(), e);
         }
     }
 
@@ -216,65 +254,11 @@ public class DetailContactActivity extends BaseActivity implements View.OnClickL
         return file;
     }
 
-    private void takeScreenshot() {
-        Date now = new Date();
-        android.text.format.DateFormat.format("yyyy-MM-dd_hh:mm:ss", now);
-
-        try {
-            // image naming and path  to include sd card  appending name you choose for file
-            String mPath = Environment.getExternalStorageDirectory().toString() + "/Scall/" + now + ".jpg";
-
-            // create bitmap screen capture
-            View v1 = getWindow().getDecorView().getRootView();
-            v1.setDrawingCacheEnabled(true);
-            Bitmap bitmap = Bitmap.createBitmap(v1.getDrawingCache());
-            v1.setDrawingCacheEnabled(false);
-
-            File imageFile = new File(mPath);
-
-            FileOutputStream outputStream = new FileOutputStream(imageFile);
-            int quality = 100;
-            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream);
-            outputStream.flush();
-            outputStream.close();
-
-            openScreenshot(imageFile);
-        } catch (Throwable e) {
-            // Several error may come out with file handling or DOM
-            e.printStackTrace();
-        }
+    public Bitmap takeScreenshot() {
+        View rootView = findViewById(android.R.id.content).getRootView();
+        rootView.setDrawingCacheEnabled(true);
+        return rootView.getDrawingCache();
     }
 
-    private void openScreenshot(File imageFile) {
-        Uri url = Uri.fromFile(imageFile);
-        Intent intent = new Intent();
-//        intent.setAction(Intent.ACTION_VIEW);
-        intent.setAction(Intent.ACTION_SEND);
-        intent.setType("image/png");
-        intent.putExtra(Intent.EXTRA_STREAM,
-                Uri.fromFile(new File(url.toString())));
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.putExtra(Intent.EXTRA_SUBJECT,
-                "share an image");
-        intent.putExtra(Intent.EXTRA_TEXT,
-                "This is an image to share with you");
-        try {
-            startActivity(Intent.createChooser(intent,
-                    "ShareThroughChooser Test"));
-        } catch (android.content.ActivityNotFoundException ex) {
-            (new android.app.AlertDialog.Builder(this)
-                    .setMessage("Share failed")
-                    .setPositiveButton("OK",
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog,
-                                                    int whichButton) {
-                                }
-                            }).create()).show();
-        }
-    }
 
-    private void acceptCall() {
-     
-
-    }
 }

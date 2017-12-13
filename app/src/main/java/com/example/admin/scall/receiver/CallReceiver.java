@@ -26,8 +26,6 @@ public class CallReceiver extends BroadcastReceiver {
     private static boolean isIncoming;
     private static String savedNumber;
     private SqliteHelper db;
-    private boolean isStyle;
-    private DetailContactActivity mActivity;
     int state = 0;
 
     public void onCallStateChanged(Context context, int state, String number) {
@@ -49,11 +47,9 @@ public class CallReceiver extends BroadcastReceiver {
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(intent);
                     Toast.makeText(context, "Incoming Call Ringing", Toast.LENGTH_SHORT).show();
-                    isStyle = true;
                 } catch (Exception e) {
                     Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
                     Log.d("onCallStateChanged:", "onCallStateChanged: " + e.getMessage());
-                    isStyle = false;
                 }
                 break;
             case TelephonyManager.CALL_STATE_OFFHOOK:

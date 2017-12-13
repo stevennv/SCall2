@@ -9,16 +9,18 @@ import android.widget.ImageView;
 
 import com.example.admin.scall.R;
 
+import java.util.List;
+
 /**
  * Created by Admin on 11/30/2017.
  */
 
 public class SelectedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private Context context;
-    private int[] list;
+    private List<Integer> list;
     private onClick onClick;
 
-    public SelectedAdapter(Context context, int[] list, onClick onClick) {
+    public SelectedAdapter(Context context, List<Integer> list, onClick onClick) {
         this.context = context;
         this.list = list;
         this.onClick = onClick;
@@ -36,12 +38,12 @@ public class SelectedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
         MyViewHolder myViewHolder = (MyViewHolder) holder;
-        final int valuesIcon = list[position];
+        final int valuesIcon = list.get(position);
         myViewHolder.imgIcon.setImageResource(valuesIcon);
         myViewHolder.imgIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                list[position] = 0;
+                list.set(position, 0);
                 notifyDataSetChanged();
                 onClick.click(position);
             }
@@ -50,7 +52,11 @@ public class SelectedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public int getItemCount() {
-        return list.length;
+        if (list != null) {
+            return list.size();
+        } else {
+            return 0;
+        }
     }
 
     class MyViewHolder extends RecyclerView.ViewHolder {
