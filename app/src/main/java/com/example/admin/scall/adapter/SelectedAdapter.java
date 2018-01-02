@@ -43,7 +43,8 @@ public class SelectedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         myViewHolder.imgIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                list.set(position, 0);
+//                list.set(position, 0);
+                list.remove(position);
                 notifyDataSetChanged();
                 onClick.click(position);
             }
@@ -64,7 +65,7 @@ public class SelectedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         public MyViewHolder(View itemView) {
             super(itemView);
-            imgIcon = (ImageView) itemView.findViewById(R.id.img_icon);
+            imgIcon = itemView.findViewById(R.id.img_icon);
         }
     }
 

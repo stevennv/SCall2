@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Environment;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
@@ -116,6 +117,7 @@ public class EditNameActivity extends BaseActivity implements View.OnClickListen
     private String name;
     private int id;
     private String phone;
+//    private Handler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -305,21 +307,36 @@ public class EditNameActivity extends BaseActivity implements View.OnClickListen
         tvChangeBackground.setOnClickListener(this);
         tvAnotherEffect.setOnClickListener(this);
         tvPreview.setOnClickListener(this);
+        final Handler handler = new Handler();
         adapterIcon = new IconAdapter(this, listIcon, new IconAdapter.onClickItem() {
             @Override
             public void click(int values) {
                 if (isAnother) {
-
-                    listSelected.add(values);
+                    if (listSelected.size() < 11) {
+                        listSelected.add(values);
 //                    arraySelected[posSelected] = values;
-                    arraySelected = new int[listSelected.size()];
-                    for (int i = 0; i < listSelected.size(); i++) {
-                        arraySelected[i] = listSelected.get(i);
-                        Log.d("click:_123", "click: " + arraySelected[i]);
+//                    adapterSelected.notifyDataSetChanged();
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                handler.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        adapterSelected.notifyDataSetChanged();
+                                    }
+                                });
+                            }
+                        }).start();
+
+//                    rvListSelected.setAdapter(adapterSelected);
+                        posSelected++;
+
+                    } else {
+                        Toast.makeText(EditNameActivity.this, getString(R.string.max_choice), Toast.LENGTH_SHORT).show();
                     }
 
-                    posSelected++;
-
+                } else {
+                    Toast.makeText(EditNameActivity.this, getString(R.string.choice_another_effect), Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -328,24 +345,16 @@ public class EditNameActivity extends BaseActivity implements View.OnClickListen
 
         adapterIcon.notifyDataSetChanged();
         rvListIcon.setAdapter(adapterIcon);
-        CountDownTimer count = new CountDownTimer(10000, 1000) {
+
+        adapterSelected = new SelectedAdapter(EditNameActivity.this, listSelected, new SelectedAdapter.onClick() {
             @Override
-            public void onTick(long l) {
+            public void click(int pos) {
 
             }
+        });
+        adapterSelected.notifyDataSetChanged();
+        rvListSelected.setAdapter(adapterSelected);
 
-            @Override
-            public void onFinish() {
-                adapterSelected = new SelectedAdapter(EditNameActivity.this, listSelected, new SelectedAdapter.onClick() {
-                    @Override
-                    public void click(int pos) {
-
-                    }
-                });
-                adapterSelected.notifyDataSetChanged();
-                rvListSelected.setAdapter(adapterSelected);
-            }
-        }.start();
 
         edtName.addTextChangedListener(new TextWatcher() {
             @Override

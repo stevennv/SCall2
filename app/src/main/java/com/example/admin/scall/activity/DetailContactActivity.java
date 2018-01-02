@@ -1,5 +1,6 @@
 package com.example.admin.scall.activity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -60,7 +61,7 @@ public class DetailContactActivity extends BaseActivity implements View.OnClickL
     private DropAnimationView dropView;
     private Gson gson;
     private ImageView imgAcceptCall;
-
+    public static Activity myDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,6 +75,7 @@ public class DetailContactActivity extends BaseActivity implements View.OnClickL
     private void iniUI() {
 
         gson = new Gson();
+        myDialog = DetailContactActivity.this;
 //        db = new SqliteHelper(this);
         tvName = findViewById(R.id.tv_name);
         tvPhoneNumber = findViewById(R.id.tv_phone_number);
